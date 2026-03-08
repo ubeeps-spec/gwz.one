@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}GWZ - Become a home cook with George{% endblock %}
+
+{% block content %}
+<style>
+    .hero-image {
+        object-fit: cover;
+        max-height: 800px;
+        filter: brightness(0.8);
+    }
+    /* Mobile optimization for banner text visibility */
+    @media (max-width: 767.98px) {
+        .hero-image {
+            min-height: 250px; /* Reduced height for mobile */
+            max-height: 300px;
+            object-fit: cover;
+        }
+        .carousel-caption {
+            background: rgba(93, 46, 134, 0.85) !important; /* Brand Purple with transparency */
+            padding: 15px;
+            border-radius: 10px;
+            width: 80%;
+            left: 10% !important;
+            right: 10% !important;
+            bottom: 50% !important;
+            transform: translateY(50%);
+            text-align: center !important;
+        }
+        .carousel-caption h1 {
+            font-size: 1.5rem !important; /* Smaller title */
+            margin-bottom: 0.5rem !important;
+        }
+        .carousel-caption p {
+            font-size: 0.9rem !important; /* Smaller subtitle */
+            margin-bottom: 0.8rem !important;
+        }
+        .carousel-caption .btn {
+            padding: 5px 15px !important;
+            font-size: 0.85rem !important;
+        }
+    }
+    
+    /* Ensure desktop caption has no background */
+    @media (min-width: 768px) {
+        .carousel-caption {
+            background: none !important;
+            bottom: 20%;
+            left: 10%;
+            right: auto;
+            text-align: left;
+        }
+    }
+    .section-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 2rem;
+        color: var(--primary-purple);
+    }
+    .btn-custom-outline {
+        border: 2px solid var(--primary-purple);
+        color: var(--primary-purple);
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .btn-custom-outline:hover {
+        background-color: var(--primary-purple);
+        color: white;
+    }
+    .lifestyle-card img {
+        height: 300px;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    .lifestyle-card:hover img {
+        transform: scale(1.05);
+    }
+</style>
+
+<!-- 1. Hero Banner Section -->
+<section class="hero-section mb-5 position-relative">
+  <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      {% for slide in hero_slides %}
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="true"></button>
+      {% endfor %}
+    </div>
+    <div class="carousel-inner">
+      {% for slide in hero_slides %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            {% if slide.link %}
+                <a href="{{ slide.link }}">
+            {% endif %}
+            
+            {% if slide.image %}
+            <img src="{{ slide.image.url }}" class="d-block w-100 hero-image" alt="{{ slide.title }}">
+            {% else %}
+            <img src="https://placehold.co/1920x800/5D2E86/FFD700?text={{ slide.title|default:'GWZ' }}" class="d-block w-100 hero-image" alt="{{ slide.title }}">
+            {% endif %}
+            
+            <div class="carousel-caption d-block text-start" style="bottom: 20%; left: 10%;">
+                <h1 class="display-3 fw-bold text-warning mb-3 d-none d-md-block" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">{{ slide.title }}</h1>
+                <h1 class="display-5 fw-bold text-warning mb-2 d-md-none" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">{{ slide.title }}</h1>
+                
+                <p class="fs-4 text-white d-none d-md-block" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">{{ slide.subtitle }}</p>
+                <p class="fs-6 text-white d-md-none" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">{{ slide.subtitle }}</p>
+                
+                {% if slide.link %}
+                <div class="mt-4">
+                    <span class="btn btn-warning text-dark fw-bold px-4 py-2 rounded-pill">{% trans "Explore More" %}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if slide.link %}
+                </a>
+            {% endif %}
+        </div>
+      {% empty %}
+        <!-- Default Fallback Banner -->
+        <div class="carousel-item active">
+             {% if site_settings.hero_banner %}
+             <img src="{{ site_settings.hero_banner.url }}" class="d-block w-100 hero-image" alt="GWZ">
+             {% else %}
+             <img src="https://placehold.co/1920x800/333/fff?text=GWZ+Lifestyle" class="d-block w-100 hero-image" alt="GWZ">
+             {% endif %}
+             <div class="carousel-caption d-block text-center top-50 translate-middle-y">
+                <h1 class="display-2 fw-bold text-white mb-3 d-none d-md-block" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">{% if site_settings.hero_title %}{{ site_settings.hero_title }}{% else %}平凡中見不凡{% endif %}</h1>
+                <h1 class="display-5 fw-bold text-white mb-2 d-md-none" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">{% if site_settings.hero_title %}{{ site_settings.hero_title }}{% else %}平凡中見不凡{% endif %}</h1>
+                
+                <p class="fs-3 text-white mb-4 d-none d-md-block" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">{% if site_settings.hero_subtitle %}{{ site_settings.hero_subtitle }}{% else %}跟著王子的味覺去生活{% endif %}</p>
+                <p class="fs-6 text-white mb-3 d-md-none" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">{% if site_settings.hero_subtitle %}{{ site_settings.hero_subtitle }}{% else %}跟著王子的味覺去生活{% endif %}</p>
+                
+                <a href="{% url 'page_detail' 'about-us' %}" class="btn btn-warning text-dark fw-bold px-4 py-2 rounded-pill d-md-none">{% trans "Explore More" %}</a>
+                <a href="{% url 'page_detail' 'about-us' %}" class="btn btn-outline-light px-5 py-2 rounded-pill fw-bold d-none d-md-inline-block">{% trans "About GWZ" %}</a>
+            </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% if hero_slides|length > 1 %}
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    </button>
+    {% endif %}
+  </div>
+</section>
+
+<!-- 2. Latest Videos Section (Prince's Kitchen) -->
+<section class="container mb-5 py-5">
+    <div class="text-center">
+        <h2 class="section-title">{% if site_settings.menu_videos_text %}{{ site_settings.menu_videos_text }}{% else %}王子煮場{% endif %}</h2>
+        <p class="lead text-muted mb-5">跟著王子探索烹飪的樂趣，從家常菜到異國風味。</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+        <!-- Featured Video 1 -->
+        <div class="col-lg-6">
+            <a href="https://www.youtube.com/watch?v=3abQg-Er-Kk" target="_blank" class="text-decoration-none">
+                <div class="position-relative shadow-lg rounded overflow-hidden">
+                    <div class="ratio ratio-16x9">
+                        <img src="https://img.youtube.com/vi/3abQg-Er-Kk/maxresdefault.jpg" class="w-100 h-100" style="object-fit: cover;" alt="濟州黑毛豬的美味之旅">
+                    </div>
+                    <div class="position-absolute top-50 start-50 translate-middle" style="z-index: 10;">
+                        <div style="width: 56px; height: 56px; background-color: rgba(0, 0, 0, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px);">
+                            <svg height="24px" width="24px" version="1.1" viewBox="0 0 24 24"><path d="M8,5v14l11-7L8,5z" fill="#fff"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="mt-3 fw-bold text-center text-dark">濟州黑毛豬的美味之旅</h4>
+            </a>
+        </div>
+        <!-- Featured Video 2 -->
+        <div class="col-lg-6">
+             <a href="https://www.youtube.com/watch?v=C47gUCemqzY" target="_blank" class="text-decoration-none">
+                <div class="position-relative shadow-lg rounded overflow-hidden">
+                    <div class="ratio ratio-16x9">
+                        <img src="https://img.youtube.com/vi/C47gUCemqzY/maxresdefault.jpg" class="w-100 h-100" style="object-fit: cover;" alt="五花腩煎炆芝麻斑食譜">
+                    </div>
+                    <div class="position-absolute top-50 start-50 translate-middle" style="z-index: 10;">
+                        <div style="width: 56px; height: 56px; background-color: rgba(0, 0, 0, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px);">
+                            <svg height="24px" width="24px" version="1.1" viewBox="0 0 24 24"><path d="M8,5v14l11-7L8,5z" fill="#fff"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="mt-3 fw-bold text-center text-dark">五花腩煎炆芝麻斑食譜</h4>
+            </a>
+        </div>
+    </div>
+    <div class="text-center mt-5">
+        <a href="{% url 'press' %}" class="btn btn-custom-outline rounded-pill px-5">{% trans "Watch More Videos" %}</a>
+    </div>
+</section>
+
+<!-- 3. Lifestyle Highlights (Blog/Stories) -->
+<section class="bg-light py-5 mb-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">{% if site_settings.menu_lifestyle_text %}{{ site_settings.menu_lifestyle_text }}{% else %}味覺足跡{% endif %}</h2>
+            <p class="lead text-muted">紀錄旅行中的味蕾記憶與生活風格。</p>
+        </div>
+        <div class="row g-4">
+             <!-- Story 1: Travel -->
+             <div class="col-md-4">
+                 <div class="card h-100 border-0 shadow-sm lifestyle-card overflow-hidden">
+                     <div class="overflow-hidden">
+                        <img src="/media/gallery/travel-hero.jpg" class="card-img-top w-100" alt="Travel & Inspiration" style="object-fit: cover; height: 300px;">
+                     </div>
+                     <div class="card-body p-4 text-center">
+                         <h5 class="fw-bold mb-3">Travel & Inspiration<br>旅行與靈感</h5>
+                         <p class="text-muted small mb-4">世界各地的文化與風味，一直是王子料理創作的重要靈感來源...</p>
+                         <a href="{% url 'page_detail' 'lifestyle' %}#travel" class="text-decoration-none fw-bold text-uppercase" style="color: var(--primary-purple);">Read Story <i class="fas fa-arrow-right ms-1"></i></a>
+                     </div>
+                 </div>
+             </div>
+             <!-- Story 2: Market -->
+             <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm lifestyle-card overflow-hidden">
+                    <div class="overflow-hidden">
+                       <img src="/media/gallery/market-hero.jpg" class="card-img-top w-100" alt="Markets & Ingredients" style="object-fit: cover; height: 300px;">
+                    </div>
+                    <div class="card-body p-4 text-center">
+                        <h5 class="fw-bold mb-3">Markets & Ingredients<br>食材的起點</h5>
+                        <p class="text-muted small mb-4">每一道好的料理，其實都從食材開始。挑選食材的過程，本身就是與自然對話的開始...</p>
+                        <a href="{% url 'page_detail' 'lifestyle' %}#market" class="text-decoration-none fw-bold text-uppercase" style="color: var(--primary-purple);">Read Story <i class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Story 3: Kitchen -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm lifestyle-card overflow-hidden">
+                    <div class="overflow-hidden">
+                       <img src="/media/gallery/kitchen-hero.jpg" class="card-img-top w-100" alt="The Kitchen Lab" style="object-fit: cover; height: 300px;">
+                    </div>
+                    <div class="card-body p-4 text-center">
+                        <h5 class="fw-bold mb-3">The Kitchen Lab<br>廚房實驗室</h5>
+                        <p class="text-muted small mb-4">在這裡，食材、火候與經驗結合，創造出一道道料理。每一次烹飪，其實都是一次創作...</p>
+                        <a href="{% url 'page_detail' 'lifestyle' %}#kitchen" class="text-decoration-none fw-bold text-uppercase" style="color: var(--primary-purple);">Read Story <i class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. Featured Products (Shop Preview) -->
+<section class="container mb-5 pb-5">
+    <div class="text-center mb-5">
+        <h2 class="section-title">GWZ 精選好物</h2>
+        <p class="lead text-muted">將王子的品味帶回家，為您的料理增添風味。</p>
+    </div>
+    
+    <div class="row g-4 justify-content-center">
+        {% for p in featured_products %}
+        <div class="col-md-3 col-sm-6">
+            <div class="card h-100 border-0 shadow-sm product-card">
+                <div class="position-relative">
+                    {% if p.image %}
+                      <img src="{{ p.image.url }}" class="card-img-top p-3" alt="{{ p.name }}" style="height: 200px; object-fit: contain;">
+                    {% elif p.image_url %}
+                      <img src="{{ p.image_url }}" class="card-img-top p-3" alt="{{ p.name }}" style="height: 200px; object-fit: contain;">
+                    {% else %}
+                      <img src="https://placehold.co/200x200?text=GWZ" class="card-img-top p-3" alt="{{ p.name }}">
+                    {% endif %}
+                </div>
+                <div class="card-body text-center">
+                    <h6 class="fw-bold text-truncate">{{ p.name }}</h6>
+                    <div class="text-primary fw-bold my-2">HK${{ p.price }}</div>
+                    <a href="{% url 'product_detail' p.slug %}" class="btn btn-sm btn-outline-dark rounded-0 w-100">{% trans "View Details" %}</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">暫無精選商品。</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-5">
+        <a href="{% url 'shop' %}" class="btn btn-dark rounded-pill px-5 py-2 fw-bold">{% trans "Visit Shop" %}</a>
+    </div>
+</section>
+
+{% endblock %}

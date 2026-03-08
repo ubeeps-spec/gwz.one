@@ -1,6 +1,25 @@
 {% extends 'base.html' %}
 {% load i18n %}
+
 {% block title %}{% trans "Shopping Guide" %} - GWZ{% endblock %}
+
+{% block meta_description %}
+    {% if page %}
+        {{ page.content|striptags|truncatechars:160 }}
+    {% else %}
+        {% trans "Learn how to shop at GWZ. Follow our simple guide to browse, select, and purchase premium kitchenware and lifestyle products." %}
+    {% endif %}
+{% endblock %}
+
+{% block og_title %}{% trans "Shopping Guide" %} - GWZ{% endblock %}
+
+{% block og_description %}
+    {% if page %}
+        {{ page.content|striptags|truncatechars:160 }}
+    {% else %}
+        {% trans "Learn how to shop at GWZ. Follow our simple guide to browse, select, and purchase premium kitchenware and lifestyle products." %}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <style>

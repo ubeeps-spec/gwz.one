@@ -22,9 +22,20 @@ from django.conf.urls.i18n import i18n_patterns
 from store.forms import LoginForm
 from store import views as store_views
 from django.contrib.auth import views as auth_views
+from django.contrib.sitemaps.views import sitemap
+from store.sitemaps import ProductSitemap, PageSitemap, StaticViewSitemap
+from django.views.generic import TemplateView
+
+sitemaps = {
+    'products': ProductSitemap,
+    'pages': PageSitemap,
+    'static': StaticViewSitemap,
+}
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
 ]
 
 urlpatterns += i18n_patterns(

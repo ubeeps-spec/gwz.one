@@ -1,54 +1,740 @@
 {% extends 'base.html' %}
-{% load i18n %}
-{% block title %}{{ page.title }} - GWZ{% endblock %}
-{% block content %}
-<div class="bg-black text-white py-4 mb-5">
-    <div class="container text-center">
-        <h1 class="h2 fw-bold mb-1">{{ page.title }}</h1>
-        <p class="small text-uppercase mb-0 text-white-50">{% trans "HOME" %} / {{ page.title }}</p>
-    </div>
-</div>
-<div class="container mb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="bg-white p-4 rounded shadow-sm">
-                {{ page.content|safe }}
+{% load i18n shortcodes %}
+{% load static %}
 
-                {% if page.slug == 'about-us' %}
-                <div class="mt-5 pt-4 border-top">
-                    <div class="row align-items-center">
-                        <div class="col-md-6 text-center text-md-start order-md-1 order-2">
-                            <h2 class="fw-bold mb-3" style="color: var(--primary-purple);">
-                                {% if site_settings.founder_intro_title %}
-                                    {{ site_settings.founder_intro_title }}
-                                {% else %}
-                                    {% trans "Extraordinary in the Ordinary" %}
-                                {% endif %}
-                            </h2>
-                            <p class="lead">
-                                {% if site_settings.founder_intro_text %}
-                                    {{ site_settings.founder_intro_text }}
-                                {% else %}
-                                    {% trans "Join Prince's culinary journey and enjoy the beautiful things in life!" %}
-                                {% endif %}
-                            </p>
-                        </div>
-                        <div class="col-md-6 text-center order-md-2 order-1 mb-4 mb-md-0">
-                            {% if site_settings.founder_image %}
-                            <img src="{{ site_settings.founder_image.url }}" class="img-fluid rounded shadow-sm" alt="{{ site_settings.founder_name }}" style="max-height: 400px; width: auto;">
-                            {% else %}
-                            <!-- Placeholder for Founder Image -->
-                            <img src="https://placehold.co/400x600?text=Prince+Image" class="img-fluid rounded shadow-sm" alt="{% trans 'Prince' %}" style="max-height: 400px; width: auto; opacity: 0.5;">
-                            {% endif %}
-                        </div>
+{% block title %}{{ page.title }} - GWZ{% endblock %}
+
+{% block meta_description %}{{ page.content|striptags|truncatechars:160 }}{% endblock %}
+
+{% block og_title %}{{ page.title }} - GWZ{% endblock %}
+{% block og_description %}{{ page.content|striptags|truncatechars:160 }}{% endblock %}
+
+{% block twitter_title %}{{ page.title }} - GWZ{% endblock %}
+{% block twitter_description %}{{ page.content|striptags|truncatechars:160 }}{% endblock %}
+
+{% block og_image %}
+    {% if page.slug == 'lifestyle' %}
+        {{ request.scheme }}://{{ request.get_host }}/media/gallery/lifestyle-hero.jpg
+    {% elif page.slug == 'about-us' and site_settings.feature_image %}
+        {{ request.scheme }}://{{ request.get_host }}{{ site_settings.feature_image.url }}
+    {% else %}
+        {{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}
+    {% endif %}
+{% endblock %}
+
+{% block twitter_image %}
+    {% if page.slug == 'lifestyle' %}
+        {{ request.scheme }}://{{ request.get_host }}/media/gallery/lifestyle-hero.jpg
+    {% elif page.slug == 'about-us' and site_settings.feature_image %}
+        {{ request.scheme }}://{{ request.get_host }}{{ site_settings.feature_image.url }}
+    {% else %}
+        {{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    var imageModal = document.getElementById('imageModal')
+    if (imageModal) {
+        imageModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            var button = event.relatedTarget
+            // If button is null (manually triggered) or doesn't have data-bs-img, do nothing or clear
+            if (!button || !button.getAttribute('data-bs-img')) {
+                // Check if this opening is valid. If not, maybe prevent it?
+                // But show.bs.modal is cancellable.
+                if (!button) return; // Allow manual trigger if needed?
+                
+                // If triggered by element without data-bs-img, it's likely a mistake or the ghost event
+                // Let's try to prevent it if the src would be empty
+                // event.preventDefault(); // This might stop the modal from showing!
+            } else {
+                var imageUrl = button.getAttribute('data-bs-img')
+                var modalImg = imageModal.querySelector('#modalImage')
+                modalImg.src = imageUrl
+            }
+        })
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Hero Section Overlay - Purple */
+    .founder-showcase::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(93, 46, 134, 0.85); /* Reduced opacity for transparency */
+        z-index: 1;
+    }
+    .founder-showcase .container {
+        z-index: 2; /* Ensure content is above overlay */
+    }
+    /* Mobile adjustments for hero height */
+    @media (max-width: 768px) {
+        .founder-showcase {
+            padding-top: 1rem !important;
+            padding-bottom: 0 !important;
+            height: 380px !important; /* Force height to prevent collapse */
+            overflow: hidden !important;
+        }
+        .founder-showcase .container {
+            height: 100% !important;
+        }
+        .founder-showcase .row {
+            display: block !important;
+            position: relative;
+            height: 100% !important;
+            padding: 0 !important;
+        }
+        
+        /* Image: Positioned bottom-right, larger */
+        .founder-showcase .founder-img-col {
+            position: absolute !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            width: 75% !important; /* Slightly wider image container */
+            max-width: 75% !important; /* Ensure max-width doesn't constrain */
+            flex: 0 0 auto !important;
+            padding: 0 !important;
+            z-index: 5 !important; /* Increase z-index */
+            text-align: right !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        .founder-img-wrapper {
+             width: 100%;
+             height: 100%;
+             display: flex !important;
+             align-items: flex-end !important;
+             justify-content: flex-end !important;
+        }
+        .founder-img-wrapper img {
+             max-height: 380px !important; /* Maximize image height to container */
+             width: auto !important;
+             max-width: 100% !important;
+             object-fit: contain;
+             object-position: bottom right;
+             display: block !important;
+        }
+
+        /* Left Name & Subtitle: Overlay on top left */
+        .founder-showcase .col-lg-3.text-end {
+            position: absolute;
+            top: 50%; /* Move down to shoulder level */
+            transform: translateY(-50%); /* Center vertically relative to the top position */
+            left: 1.5rem;
+            width: auto !important;
+            text-align: left !important;
+            z-index: 10; /* Higher z-index to sit on top */
+            padding: 0 !important;
+            margin-top: 2rem; /* Additional offset to be below shoulder */
+        }
+        .founder-showcase-title-lg {
+            font-size: 2.5rem !important;
+            margin-bottom: 0.5rem !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .founder-showcase .col-lg-3 .mt-4 {
+            display: block !important;
+            margin-top: 0.5rem !important;
+            border-left: 3px solid var(--primary-yellow) !important;
+            padding-left: 0.75rem !important;
+            border-right: none !important;
+            background: rgba(0, 0, 0, 0.4); /* Darker background for contrast */
+            padding: 0.75rem !important;
+            border-radius: 0 4px 4px 0;
+            backdrop-filter: blur(4px);
+            max-width: 200px;
+        }
+        .founder-showcase .col-lg-3 .mt-4 h4 {
+            font-size: 1rem !important;
+            margin-bottom: 0.25rem !important;
+            color: var(--primary-yellow) !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .founder-showcase .col-lg-3 .mt-4 p {
+            font-size: 0.75rem !important;
+            line-height: 1.2;
+            color: #fff !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Right Name (Chinese): Positioned middle-right */
+        .founder-showcase .col-lg-3:last-child {
+            position: absolute;
+            top: 50%; /* Move down to match */
+            transform: translateY(-50%);
+            right: 1.5rem;
+            width: auto !important;
+            z-index: 2;
+            padding: 0 !important;
+            margin-top: 2rem; /* Additional offset */
+        }
+        .founder-showcase .col-lg-3:last-child .founder-showcase-title-lg {
+            font-size: 2.5rem !important;
+        }
+        
+        /* Content Padding Adjustment for Mobile */
+        .container.my-5.py-5 {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+            padding-top: 2rem !important; /* Reduce top padding on mobile content */
+            margin-top: 1rem !important;
+        }
+        .lifestyle-gallery-img {
+            max-height: 200px !important;
+            object-fit: cover;
+        }
+    }
+
+    /* Tablet adjustments (768px - 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .founder-showcase {
+            height: 450px !important; /* Taller than mobile, shorter than desktop */
+            padding-top: 2rem !important;
+        }
+        .founder-showcase .row {
+            display: flex !important; /* Use flexbox for tablet */
+            align-items: flex-end !important;
+            justify-content: center !important;
+        }
+        /* Hide desktop side columns on tablet to avoid crowding */
+        .founder-showcase .col-lg-3 {
+            display: none !important;
+        }
+        /* Center image */
+        .founder-showcase .col-lg-6 {
+            width: 100% !important;
+            text-align: center !important;
+            position: static !important; /* Reset position */
+        }
+        .founder-img-wrapper img {
+            max-height: 400px !important;
+            width: auto;
+        }
+        /* Show Tablet-specific overlay text */
+        .tablet-overlay-text {
+            display: block !important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+            margin-top: 0; /* Centered */
+        }
+        .founder-showcase-title-lg {
+            font-size: 4rem !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+        /* Adjust bottom gallery images on tablet */
+        .lifestyle-gallery-img {
+            height: 250px !important; /* Fixed smaller height */
+            min-height: 0 !important;
+            object-fit: cover;
+            width: 100% !important;
+        }
+        /* Adjust text blocks in lifestyle section on tablet */
+        .lifestyle-text-col {
+            height: 250px !important; /* Match image height */
+            padding: 1.5rem !important; /* Reduce padding */
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .lifestyle-text-col h3 {
+            font-size: 1.25rem !important; /* Smaller title */
+            margin-bottom: 0.5rem !important;
+        }
+        .lifestyle-text-col p {
+            font-size: 0.8rem !important; /* Smaller description */
+            line-height: 1.4;
+        }
+        .lifestyle-text-col .btn {
+            padding: 0.25rem 1rem !important; /* Smaller button */
+            font-size: 0.8rem !important;
+        }
+    }
+    /* About page: milestone timeline style (purple dots + years) */
+    .about-content ul.list-unstyled {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-left: 0;
+        border-left: 2px solid var(--primary-purple);
+    }
+    .about-content ul.list-unstyled li {
+        position: relative;
+        padding-left: 0.25rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.8;
+    }
+    .about-content ul.list-unstyled li::before {
+        content: "";
+        position: absolute;
+        left: -0.54rem;
+        top: 0.55em;
+        width: 0.5rem;
+        height: 0.5rem;
+        background: var(--primary-purple);
+        border-radius: 50%;
+        box-shadow: 0 0 0 3px #fff;
+    }
+    .about-content ul.list-unstyled li i {
+        display: none !important; /* hide old check icons */
+    }
+    .about-content strong { color: #333; }
+    /* Hide tablet overlay on other screens */
+    .tablet-overlay-text {
+        display: none;
+    }
+</style>
+
+<!-- Modal for Image Preview -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0 shadow-none">
+      <div class="modal-body p-0 position-relative text-center">
+        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 1056;"></button>
+        <img src="" id="modalImage" class="img-fluid rounded shadow-lg" alt="Preview">
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if page.slug == 'about-us' %}
+    {# --- Special Layout for About Us --- #}
+    
+    {# 1. Founder Showcase (Purple Hero) - MOVED TO TOP #}
+    <div class="founder-showcase pt-4 pb-0" style="background-color: transparent !important; position: relative; overflow: hidden;">
+        <div class="container position-relative h-100">
+             <div class="row align-items-end justify-content-center h-100">
+                 <!-- Desktop: Left Name -->
+                 <div class="col-lg-3 col-4 d-flex flex-column justify-content-center align-self-center text-end mb-5 mb-lg-0">
+                     <div class="founder-showcase-title-lg text-white" style="font-size: clamp(2rem, 5vw, 5rem); font-weight: 800; line-height: 1; text-transform: uppercase;">
+                        George<br><span class="text-warning">Wong</span>
+                     </div>
+                     <div class="mt-4 pe-3 border-end border-3 border-warning d-none d-lg-block" style="min-height: 80px; border-color: var(--primary-yellow) !important;">
+                         <h4 class="h5 fw-bold mb-2 text-warning" style="color: var(--primary-yellow) !important; font-size: 1.25rem;">{% trans "Become a home cook" %}</h4>
+                         <p class="small mb-0 text-white-50">{% trans "Start your culinary journey with Prince today." %}</p>
+                     </div>
+                 </div>
+
+                 <!-- Center Column: Image -->
+                 <div class="col-lg-6 col-4 text-center px-0 align-self-end founder-img-col">
+                     <div class="founder-img-wrapper">
+                         {% if site_settings.founder_image %}
+                         <img src="{{ site_settings.founder_image.url }}" class="img-fluid" style="vertical-align: bottom;" alt="{{ site_settings.founder_name }}">
+                         {% else %}
+                         <img src="https://placehold.co/400x550?text=Prince" class="img-fluid" style="vertical-align: bottom;" alt="Prince">
+                         {% endif %}
+                     </div>
+                     
+                     <!-- Tablet Overlay Text (Visible only on 768px-991px) -->
+                     <div class="tablet-overlay-text">
+                         <div class="founder-showcase-title-lg text-white" style="line-height: 1; text-transform: uppercase;">
+                            George <span class="text-warning">Wong</span>
+                         </div>
+                         <div class="founder-showcase-title-lg text-white" style="font-size: 3rem !important; margin-top: 0.5rem;">
+                            {{ site_settings.founder_name }}
+                         </div>
+                         <!-- Subtitle added for Tablet View -->
+                         <div class="mt-3">
+                             <h4 class="h5 fw-bold mb-2 text-warning" style="color: var(--primary-yellow) !important; font-size: 1.25rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                                 {% trans "Become a home cook" %}
+                             </h4>
+                             <p class="small mb-0 text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                                 {% trans "Start your culinary journey with Prince today." %}
+                             </p>
+                         </div>
+                     </div>
+                 </div>
+
+                 <!-- Desktop: Right Name -->
+                 <div class="col-lg-3 col-4 d-flex flex-column justify-content-center align-self-center mb-5 mb-lg-0">
+                     <div class="founder-showcase-title-lg text-white" style="font-size: clamp(2rem, 5vw, 5rem); font-weight: 800; text-transform: uppercase;">{{ site_settings.founder_name }}</div>
+                 </div>
+             </div>
+        </div>
+    </div>
+
+    {# 2. Main Text Content (Below Founder) #}
+    <div class="container my-5 py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="mb-5">
+                    <h2 class="display-6 fw-bold mb-4 text-center" style="color: var(--primary-purple);">
+                        {% if site_settings.founder_intro_title %}
+                            {{ site_settings.founder_intro_title }}
+                        {% else %}
+                            {% trans "Extraordinary in the Ordinary" %}
+                        {% endif %}
+                    </h2>
+                    <div class="about-content lead text-muted" style="line-height: 1.8;">
+                        {% if page.slug == 'about-us' %}
+                            <p>英國留學期間，面對昂貴的外食與難覓的道地中菜，他因思念家鄉風味而走進市場與廚房。從探索食材開始，他重尋記憶中的味道，也展開了屬於他的料理旅程。</p>
+
+                            <p>他相信烹飪是一門藝術，更是與所愛之人交流分享的橋樑。食物不僅是日常所需，更能跨越語言，促進不同文化間的溝通與連結，拉近人與人之間的距離。</p>
+
+                            <h3 class="fw-bold mt-5 mb-3" style="color: var(--primary-purple);">里程碑</h3>
+
+                            <ul class="list-unstyled">
+                                    <li class="mb-2"><strong style="color: var(--primary-purple);">2018 年</strong>：開始製作烹飪影片，陸續於 YouTube（#王子煮場）與《明報》刊載，觸達超過 50 萬日讀者。</li>
+                                    <li class="mb-2"><strong style="color: var(--primary-purple);">2019–2020 年</strong>：主持烹飪節目「30 分鐘大放餸」，於香港開電視第 77 台播出。</li>
+                                    <li class="mb-2"><strong style="color: var(--primary-purple);">2020 年</strong>：開展內地平台（騰訊、抖音）內容：#乔治王子的品质生活。</li>
+                            </ul>
+
+                            <h3 class="fw-bold mt-5 mb-3" style="color: var(--primary-purple);">理念</h3>
+
+                            <p><strong class="text-dark">GWZ Live・In Style</strong></p>
+
+                            <p>我們持續在東西交會的香港汲取靈感，將味道、文化與生活方式相互串連。我們希望讓每一次料理都更有溫度與故事，讓每一位熱愛生活的人，都能在平凡日子裡創造不凡的味覺記憶。</p>
+
+                            <h3 class="fw-bold mt-5 mb-4 text-center" style="color: var(--primary-purple);">王子的88道拿手菜</h3>
+
+                            <div class="row align-items-center mb-5">
+                                <div class="col-md-5 mb-4 mb-md-0">
+                                    <img alt="王子的88道拿手菜" class="img-fluid rounded shadow-sm w-100" src="/media/book/88_dishes_of_George.jpg" />
+                                </div>
+
+                                <div class="col-md-7">
+                                    <p>經過多年努力和準備，王子終於在 2021 年七月書展，推出了第一本個人菜譜——《王子的88道拿手菜》。在這本特別的食譜中，王子將他多年的烹調秘訣跟讀者分享，收錄了 88 道精選菜式，涵蓋多國料理。</p>
+
+                                    <p>這本書亦是為了答謝多年支持和啟發他的祖父，是他令王子學懂欣賞有質素的食物和烹調技巧。這本書不僅是食譜，更是王子以食會友、分享人生之味的邀請。</p>
+                                </div>
+                            </div>
+
+                            <div class="row row-cols-2 row-cols-md-4 g-3 mb-5">
+                                <div class="col">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#bookModal" data-bs-slide-to="0">
+                                        <img alt="王子的88道拿手菜 - 肉類" class="img-fluid rounded shadow-sm w-100 hover-scale" src="/media/book/88_meat013.jpg" style="cursor:pointer; object-fit:cover; aspect-ratio: 1/1;" />
+                                    </a>
+                                </div>
+                                <div class="col">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#bookModal" data-bs-slide-to="1">
+                                        <img alt="王子的88道拿手菜 - 海鮮" class="img-fluid rounded shadow-sm w-100 hover-scale" src="/media/book/88_seafood010.jpg" style="cursor:pointer; object-fit:cover; aspect-ratio: 1/1;" />
+                                    </a>
+                                </div>
+                                <div class="col">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#bookModal" data-bs-slide-to="2">
+                                        <img alt="王子的88道拿手菜 - 飯類" class="img-fluid rounded shadow-sm w-100 hover-scale" src="/media/book/88_rice010.jpg" style="cursor:pointer; object-fit:cover; aspect-ratio: 1/1;" />
+                                    </a>
+                                </div>
+                                <div class="col">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#bookModal" data-bs-slide-to="3">
+                                        <img alt="王子的88道拿手菜 - 飯類" class="img-fluid rounded shadow-sm w-100 hover-scale" src="/media/book/88_rice013.jpg" style="cursor:pointer; object-fit:cover; aspect-ratio: 1/1;" />
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-5 p-4 bg-light rounded border-start border-4" style="border-color: var(--primary-purple) !important;">
+                                <p class="lead mb-2 fst-italic">"Start learning new cooking skills today, with the best possible help."</p>
+                                <p class="mb-0 fw-bold text-secondary">—— 在我們的鼎力相助下，從今天開始學習烹飪技巧吧！</p>
+                            </div>
+
+                            <!-- Hardcoded Book Lightbox Modal for About Us -->
+                            <div class="modal fade" id="bookModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-xl">
+                                    <div class="modal-content bg-transparent border-0 position-relative">
+                                        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 2000; font-size: 1.5rem; filter: invert(1) grayscale(100%) brightness(200%); opacity: 1;"></button>
+                                        <div class="modal-body p-0 position-relative">
+                                            <div id="bookCarousel" class="carousel slide" data-bs-interval="false">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-item active">
+                                                        <div class="zoom-wrapper d-flex justify-content-center align-items-center" style="height: 85vh; overflow: hidden; position: relative;">
+                                                            <img src="/media/book/88_meat013.jpg" class="d-block img-fluid rounded zoom-target" alt="Meat" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                                        </div>
+                                                    </div>
+                                                    <div class="carousel-item">
+                                                        <div class="zoom-wrapper d-flex justify-content-center align-items-center" style="height: 85vh; overflow: hidden; position: relative;">
+                                                            <img src="/media/book/88_seafood010.jpg" class="d-block img-fluid rounded zoom-target" alt="Seafood" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                                        </div>
+                                                    </div>
+                                                    <div class="carousel-item">
+                                                        <div class="zoom-wrapper d-flex justify-content-center align-items-center" style="height: 85vh; overflow: hidden; position: relative;">
+                                                            <img src="/media/book/88_rice010.jpg" class="d-block img-fluid rounded zoom-target" alt="Rice 1" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                                        </div>
+                                                    </div>
+                                                    <div class="carousel-item">
+                                                        <div class="zoom-wrapper d-flex justify-content-center align-items-center" style="height: 85vh; overflow: hidden; position: relative;">
+                                                            <img src="/media/book/88_rice013.jpg" class="d-block img-fluid rounded zoom-target" alt="Rice 2" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button class="carousel-control-prev" type="button" data-bs-target="#bookCarousel" data-bs-slide="prev" style="width: 5%; z-index: 1052;">
+                                                    <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                                                    <span class="visually-hidden">Previous</span>
+                                                </button>
+                                                <button class="carousel-control-next" type="button" data-bs-target="#bookCarousel" data-bs-slide="next" style="width: 5%; z-index: 1052;">
+                                                    <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                                                    <span class="visually-hidden">Next</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% elif page.slug == 'lifestyle' %}
+                            <!-- Section 1: Lifestyle Intro (Hero) -->
+                            <section class="position-relative full-bleed d-flex align-items-end pb-5 rounded overflow-hidden mb-5" style="background-image: url('/media/gallery/lifestyle-hero.jpg'); background-size: cover; background-position: center; min-height: 50vh;">
+                                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);"></div>
+                                <div class="container position-relative text-white z-index-1">
+                                    <h2 class="display-4 fw-bold mb-3">Lifestyle</h2>
+                                    <p class="lead mb-0">Discover the art of living with George.</p>
+                                </div>
+                            </section>
+                             <!-- More Lifestyle Content if needed, for now just the hero from dump or placeholder -->
+                             {{ page.content|render_shortcodes|safe }}
+                        {% else %}
+                            {{ page.content|render_shortcodes|safe }}
+                        {% endif %}
                     </div>
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
-    <div class="text-center mt-4">
-        <a href="{% url 'product_list' %}" class="btn btn-outline-dark">{% trans "Back to Home" %}</a>
+    {# 3. Book Gallery Section (Removed - Hardcoded in About Us block) #}
+
+    {# 4. Gallery / Lifestyle Strip #}
+    <div class="container-fluid px-0 mb-5">
+        <div class="row g-0">
+            <div class="col-md-3 col-lg-3">
+                {% if site_settings.feature_image %}
+                <img src="{{ site_settings.feature_image.url }}" class="w-100 h-100 lifestyle-gallery-img" style="min-height: 300px; object-fit: cover;" alt="Feature 1">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600&h=600" class="w-100 h-100 lifestyle-gallery-img" style="min-height: 300px; object-fit: cover;" alt="Feature 1">
+                {% endif %}
+            </div>
+            <div class="col-md-3 col-lg-3 lifestyle-text-col bg-dark text-white d-flex align-items-center justify-content-center p-5 text-center">
+                <div>
+                    <h3 class="fw-bold mb-3">
+                        {% if site_settings.feature_title %}
+                            {{ site_settings.feature_title }}
+                        {% else %}
+                            GWZ Live・In Style
+                        {% endif %}
+                    </h3>
+                    <p class="mb-0">
+                        {% if site_settings.feature_subtitle %}
+                            {{ site_settings.feature_subtitle }}
+                        {% else %}
+                            {% trans "Discover the art of living well." %}
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+             <div class="col-md-3 col-lg-3">
+                <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&h=600" class="w-100 h-100 lifestyle-gallery-img" style="min-height: 300px; object-fit: cover;" alt="Feature 2">
+            </div>
+            <div class="col-md-3 col-lg-3 lifestyle-text-col bg-primary text-white d-flex align-items-center justify-content-center p-5 text-center" style="background-color: var(--primary-purple) !important;">
+                <div>
+                    <h3 class="fw-bold mb-3">{% trans "Join Us" %}</h3>
+                    <a href="{% url 'shop' %}" class="btn btn-outline-light rounded-pill px-4">{% trans "Shop Now" %}</a>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+
+
+
+{% elif page.slug == 'blog' %}
+    {# --- Blog / Recipes & Stories Layout --- #}
+    <div class="bg-black text-white py-4 mb-5">
+        <div class="container text-center">
+            <h1 class="h2 fw-bold mb-1">{{ page.title }}</h1>
+            <p class="small text-uppercase mb-0 text-white-50">{% trans "HOME" %} / {{ page.title }}</p>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- Featured Videos / Content -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="bg-white p-4 rounded shadow-sm blog-content">
+                    {{ page.content|render_shortcodes|safe }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-dark">{% trans "Back to Home" %}</a>
+        </div>
+    </div>
+
+{% elif page.slug == 'lifestyle' %}
+    {% load i18n static gallery_tags %}
+    {# --- Lifestyle Page Layout (Full Width, No Padding) --- #}
+    
+    <!-- Section 1: Lifestyle Intro (Hero) -->
+    <section class="position-relative full-bleed d-flex align-items-end pb-5" style="background-image: url('/media/gallery/lifestyle-hero.jpg'); background-size: cover; background-position: center; min-height: 65vh;">
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);"></div>
+        <div class="container position-relative z-index-2 mb-4">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="section-eyebrow text-warning mb-2">Lifestyle</div>
+                    <h1 class="magazine-hero-title text-white mb-3">The Art of Living<br>生活風格</h1>
+                    <p class="lead text-white opacity-90 mb-0" style="max-width: 600px;">Cooking is not only about food. It is a way of living. <br>料理從來不只是烹飪技巧，而是一種對生活細節的追求。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Travel (Editorial Split) -->
+    <section id="travel" class="py-5 full-bleed">
+        <div class="container-fluid px-0">
+            <div class="row g-0 align-items-center">
+                <div class="col-lg-6">
+                    <div class="ratio ratio-4x3">
+                        <img src="/media/gallery/travel-hero.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Travel & Inspiration" loading="lazy">
+                    </div>
+                </div>
+                <div class="col-lg-6 p-4 p-lg-5 bg-white">
+                    <div class="ps-lg-4 px-3 px-lg-0">
+                        <div class="section-eyebrow text-dark mb-3">Travel</div>
+                        <h2 class="section-title display-5 mb-4">Travel & Inspiration<br>旅行與靈感</h2>
+                        <p class="section-subtitle text-muted mb-4 fst-italic">"Each destination inspires the creativity behind GWZ."</p>
+                        <div class="text-muted">
+                            <p class="drop-cap">世</p>
+                            <p>界各地的文化與風味，一直是王子料理創作的重要靈感來源。從倫敦到歐洲，從亞洲不同城市到各地市場，每一次旅行都帶來新的味道與想法。</p>
+                            <p class="mt-3">這些文化與體驗，慢慢地融入 GWZ 的料理風格之中。旅行不僅是移動，更是味覺的積累。</p>
+                        </div>
+                        {% render_gallery "travel" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Market (Overlap Layout) -->
+    <section id="market" class="py-5 bg-cream full-bleed position-relative overflow-hidden">
+        <div class="container px-4 px-lg-3">
+            <div class="row align-items-center">
+                <div class="col-lg-6 order-lg-2">
+                     <div class="ratio ratio-1x1 shadow-lg mb-4 mb-lg-0">
+                        <img src="/media/gallery/market-hero.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Markets" loading="lazy">
+                    </div>
+                </div>
+                <div class="col-lg-6 order-lg-1">
+                    <div class="pe-lg-5">
+                        <div class="section-eyebrow text-dark">Market</div>
+                        <h2 class="section-title mb-3">Markets & Ingredients<br>食材的起點</h2>
+                        <p class="lead text-secondary mb-4">Great cooking begins with great ingredients.</p>
+                        <div class="editorial-columns text-muted">
+                            <p>每一道好的料理，其實都從食材開始。王子喜歡親自到市場與超市挑選食材，了解食材的新鮮度、來源與品質。</p>
+                            <p>因為只有好的食材，才能做出真正有靈魂的料理。挑選食材的過程，本身就是與自然對話的開始。</p>
+                        </div>
+                        {% render_gallery "market" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Kitchen (Centered Editorial) -->
+    <section id="kitchen" class="py-5 bg-white full-bleed">
+        <div class="container px-4 px-lg-3">
+            <div class="text-center mb-5 mx-auto" style="max-width: 800px;">
+                <div class="section-eyebrow text-dark">Kitchen</div>
+                <h2 class="section-title display-4 mb-3">The Kitchen Lab</h2>
+                <p class="section-subtitle text-muted">"Where creativity becomes flavour."</p>
+            </div>
+            
+            <div class="row justify-content-center mb-5">
+                 <div class="col-lg-10">
+                    <div class="ratio ratio-21x9 shadow-sm">
+                        <img src="/media/gallery/kitchen-hero.jpg" class="w-100 h-100 rounded" style="object-fit: cover;" alt="Kitchen" loading="lazy">
+                    </div>
+                 </div>
+            </div>
+
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-8">
+                    <div class="editorial-columns text-muted">
+                        <p><span class="fw-bold text-dark">廚房，是王子最熟悉的地方。</span> 在這裡，食材、火候與經驗結合，創造出一道道料理。每一次烹飪，其實都是一次創作。</p>
+                        <p>不論是實驗新的調味組合，還是重現經典的味道，廚房永遠充滿著無限的可能與驚喜。這是一個關於溫度、時間與耐心的實驗室。</p>
+                    </div>
+                </div>
+            </div>
+            {% render_gallery "kitchen" %}
+        </div>
+    </section>
+
+    <!-- Section 5: Music (Dark Immersive) -->
+    <section class="py-5 bg-charcoal full-bleed text-white">
+        <div class="container px-4 px-lg-3">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5">
+                    <div class="ratio ratio-1x1 shadow-soft border border-secondary">
+                        <img src="/media/gallery/music-hero.jpg" class="w-100 h-100" style="object-fit: cover; filter: grayscale(20%);" alt="Music" loading="lazy">
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="ps-lg-5">
+                        <div class="section-eyebrow text-warning">Music & Vibe</div>
+                        <h2 class="section-title display-5 mb-4">Rhythm of Cooking<br>生活中的藝術</h2>
+                        <p class="lead text-light opacity-75 mb-4">Cooking and music share the spirit of creativity.</p>
+                        <p class="text-white-50">對王子而言，料理與音樂其實有很多相似的地方。節奏、平衡與情感，都在其中。音樂、藝術與生活體驗，都會影響料理的靈感與創意。當爵士樂響起，鍋中的律動也隨之起舞。</p>
+                        {% render_gallery "music" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 6: Moments (Gallery Focus) -->
+    <section class="py-5 full-bleed position-relative" style="background-image: url('/media/gallery/moments-hero.jpg'); background-attachment: fixed; background-size: cover; min-height: 400px;">
+         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(93, 46, 134, 0.9);"></div>
+         <div class="container px-4 px-lg-3 position-relative z-index-2 py-5">
+            <div class="text-center text-white mb-4 mx-auto" style="max-width: 700px;">
+                <h2 class="magazine-hero-title mb-3">Moments</h2>
+                <p class="lead">Good food is meant to be shared.</p>
+                <p class="opacity-75">料理的真正意義，往往來自與人分享的時刻。朋友、家人、餐桌上的交流與笑聲，都是生活中最珍貴的片刻。</p>
+            </div>
+            {% render_gallery "moments" %}
+         </div>
+    </section>
+
+    <!-- Final Quote -->
+    <section class="py-5 bg-white full-bleed text-center">
+        <div class="container">
+            <div class="mx-auto" style="max-width: 600px;">
+                 <p class="display-6 font-serif fst-italic text-dark mb-3">"Cooking is a reflection of life."</p>
+                 <div class="text-muted text-uppercase small letter-spacing-2">— Prince</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container pb-5 text-center">
+        <a href="{% url 'product_list' %}" class="btn btn-outline-dark mt-5">{% trans "Back to Home" %}</a>
+    </div>
+
+{% else %}
+    {# --- Standard Layout for Other Pages --- #}
+    <div class="bg-black text-white py-4 mb-5">
+        <div class="container text-center">
+            <h1 class="h2 fw-bold mb-1">{{ page.title }}</h1>
+            <p class="small text-uppercase mb-0 text-white-50">{% trans "HOME" %} / {{ page.title }}</p>
+        </div>
+    </div>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="bg-white p-4 rounded shadow-sm">
+                    {{ page.content|render_shortcodes|safe }}
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-dark">{% trans "Back to Home" %}</a>
+        </div>
+    </div>
+{% endif %}
+
 {% endblock %}

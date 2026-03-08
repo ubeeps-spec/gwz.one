@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Gallery" %} - GWZ{% endblock %}
+
+{% block meta_description %}
+    {% trans "Explore the GWZ gallery. Discover stories about food, travel, and culture through our curated photo collection." %}
+{% endblock %}
+
+{% block og_title %}{% trans "Gallery" %} - GWZ{% endblock %}
+
+{% block og_description %}
+    {% trans "Explore the GWZ gallery. Discover stories about food, travel, and culture through our curated photo collection." %}
+{% endblock %}
+
+{% block content %}
+<div class="bg-black text-white py-4 mb-5">
+    <div class="container text-center">
+        <h1 class="h2 fw-bold mb-1">相簿</h1>
+        <p class="small text-uppercase mb-0 text-white-50">首頁 / 相簿</p>
+    </div>
+    </div>
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="bg-white p-4 rounded shadow-sm">
+                <h2 class="fw-bold mb-3">照片故事</h2>
+                <p class="text-muted mb-4">
+                    精選照片，延伸出關於美食、旅行與文化的故事。
+                </p>
+
+                {% if images %}
+                <div class="row g-3">
+                    {% for img in images %}
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <a href="{{ img.url }}" target="_blank" rel="noopener" class="d-block">
+                            <img src="{{ img.url }}" alt="{{ img.name }}" class="img-fluid rounded border">
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-5">
+                    尚未加入相片。請將圖片上傳至「media/gallery」。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

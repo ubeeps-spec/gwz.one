@@ -1,0 +1,182 @@
+{% extends "admin/import_export/change_list.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+@media (max-width: 992px) {
+    /* Force table to not behave like a table */
+    #result_list, #result_list tbody, #result_list th, #result_list td, #result_list tr {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Hide table headers */
+    #result_list thead {
+        display: none !important;
+    }
+
+    /* Card styling for rows */
+    #result_list tbody tr {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 15px !important;
+        padding: 15px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: relative;
+        height: auto !important;
+        min-height: 200px;
+    }
+
+    /* Cell styling */
+    #result_list tbody td, #result_list tbody th {
+        border: none !important;
+        padding: 5px 0 !important;
+        position: relative;
+        text-align: left !important;
+        white-space: normal !important;
+        display: block !important;
+    }
+
+    /* Checkbox positioning */
+    .action-checkbox {
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+        width: auto !important;
+        padding: 0 !important;
+        z-index: 100;
+        background: transparent !important;
+        display: block !important;
+    }
+    .action-checkbox .form-check-input {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Image - Center and Large */
+    .field-product_thumbnail {
+        text-align: center !important;
+        margin-bottom: 15px;
+        display: flex !important;
+        justify-content: center;
+        width: 100% !important;
+    }
+    .field-product_thumbnail img {
+        max-width: 100% !important;
+        max-height: 250px !important;
+        width: auto !important;
+        height: auto !important;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+
+    /* Name - Title Style */
+    .field-name {
+        font-size: 1.4em !important;
+        font-weight: bold !important;
+        color: #333;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee !important;
+        padding-bottom: 10px !important;
+        width: 100% !important;
+    }
+
+    /* SKU */
+    .field-sku {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+    }
+    .field-sku::before {
+        content: "SKU: ";
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Price Section */
+    .field-price {
+        display: inline-block !important;
+        width: auto !important;
+        margin-right: 15px;
+        font-weight: bold;
+        color: #333;
+    }
+    .field-price::before {
+        content: "Price: ";
+        font-weight: normal;
+        color: #666;
+    }
+
+    /* Discount Price */
+    .field-discount_price {
+        display: inline-block !important;
+        width: auto !important;
+        font-weight: bold;
+        color: #e74c3c !important; /* Red */
+    }
+    .field-discount_price::before {
+        content: "Special: ";
+        font-weight: normal;
+        color: #666;
+    }
+
+    /* Stock Status */
+    .field-stock_status {
+        margin-top: 5px;
+        font-weight: bold;
+        display: block !important;
+    }
+    .field-stock_status::before {
+        content: "庫存: ";
+        font-weight: normal;
+        color: #666;
+    }
+
+    /* Toggles */
+    .field-is_active, .field-is_featured {
+        display: inline-block !important;
+        width: auto !important;
+        margin-right: 20px;
+        margin-top: 10px;
+        padding-top: 10px !important;
+        border-top: 1px solid #eee !important;
+    }
+    
+    .field-is_active::before {
+        content: "Active ";
+        color: #666;
+        margin-right: 5px;
+    }
+    
+    .field-is_featured::before {
+        content: "Featured ";
+        color: #666;
+        margin-right: 5px;
+    }
+
+    /* Hide empty cells */
+    td:empty {
+        display: none !important;
+    }
+    
+    /* Remove table borders and backgrounds from container */
+    .card-body.table-responsive {
+        border: none !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+    .card {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+{% endblock %}

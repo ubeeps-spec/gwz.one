@@ -16,8 +16,11 @@ urlpatterns = [
     path('profile/order/<int:order_id>/', views.user_order_detail, name='user_order_detail'),
     path('contact/', views.contact_view, name='contact'),
     path('tutorial/', views.tutorial, name='tutorial'),
+    path('press/', views.press_gallery, name='press'),
+    path('gallery/', views.gallery_view, name='gallery'),
     path('pages/<slug:slug>/', views.page_detail, name='page_detail'),
     path('wishlist/', views.wishlist_view, name='wishlist'),
+    path('wishlist/remove/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('wishlist/toggle/', views.toggle_wishlist, name='toggle_wishlist'),
     path('webhook/stripe/', views.stripe_webhook, name='stripe_webhook'),
 ]

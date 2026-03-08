@@ -40,7 +40,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=220, unique=True, verbose_name=_("Slug"))
     sku = models.CharField(max_length=100, unique=True, verbose_name=_("SKU"))
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Price"))
-    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name=_("Discount Price"))
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name=_("特價"))
     stock = models.PositiveIntegerField(default=0, verbose_name=_("Stock"))
     categories = models.ManyToManyField(Category, blank=True, related_name="products", verbose_name=_("Categories"))
     description = RichTextField(blank=True, verbose_name=_("Description"))
@@ -48,6 +48,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name=_("Product Image"))
     image_url = models.URLField(blank=True, verbose_name=_("Image URL"))
     is_active = models.BooleanField(default=True, verbose_name=_("Active"))
+    is_featured = models.BooleanField(default=False, verbose_name=_("精選商品"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
@@ -93,6 +94,17 @@ class Page(models.Model):
     slug = models.SlugField(unique=True, verbose_name=_("Slug"))
     content = RichTextField(verbose_name=_("Content"))
     is_active = models.BooleanField(default=True, verbose_name=_("Active"))
+    
+    # About Us Specific Fields
+    feature_title = models.CharField(max_length=200, blank=True, verbose_name=_("Feature Title"))
+    feature_subtitle = models.CharField(max_length=500, blank=True, verbose_name=_("Feature Subtitle"))
+    feature_image = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name=_("Feature Image"))
+    
+    founder_image = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name=_("Founder Image"))
+    founder_name = models.CharField(max_length=100, blank=True, verbose_name=_("Founder Name"))
+    founder_intro_title = models.CharField(max_length=200, blank=True, verbose_name=_("Founder Intro Title"))
+    founder_intro_text = models.TextField(blank=True, verbose_name=_("Founder Intro Text"))
+    
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
@@ -225,6 +237,9 @@ class SiteSettings(models.Model):
     hero_button_text = models.CharField(max_length=50, blank=True, verbose_name=_("Hero Button Text"))
     hero_link = models.URLField(blank=True, verbose_name=_("Hero Link"))
     
+    # YouTube Playlist
+    youtube_playlist_url = models.URLField(blank=True, default="https://www.youtube.com/embed/videoseries?list=PLEjO4hD4At7yhmox4RhnjRWaUujB24TZ2", verbose_name=_("YouTube Playlist URL"), help_text=_("Embed URL for the playlist"))
+
     # Feature Section (Middle of Homepage)
     feature_title = models.CharField(max_length=200, blank=True, default="我們有什麽", verbose_name=_("Feature Title"))
     feature_subtitle = models.CharField(max_length=500, blank=True, default="加入我們對食物的精雕細琢之旅，感受我們的美食文化與獨特風格", verbose_name=_("Feature Subtitle"))
@@ -246,6 +261,7 @@ class SiteSettings(models.Model):
     
     facebook_url = models.URLField(blank=True, verbose_name=_("Facebook URL"))
     instagram_url = models.URLField(blank=True, verbose_name=_("Instagram URL"))
+    youtube_url = models.URLField(blank=True, verbose_name=_("YouTube URL"))
     whatsapp_url = models.URLField(blank=True, verbose_name=_("WhatsApp URL"))
     
     # Tracking Pixels
@@ -261,20 +277,19 @@ class SiteSettings(models.Model):
     smtp_from_email = models.EmailField(blank=True, verbose_name=_("From Email"))
 
     # Main Menu Text Customization
-    menu_home_text = models.CharField(max_length=50, default="主頁", verbose_name=_("Menu Home Text"))
-    menu_store_text = models.CharField(max_length=50, default="商店", verbose_name=_("Menu Store Text"))
-    menu_about_text = models.CharField(max_length=50, default="關於我們", verbose_name=_("Menu About Text"))
-    menu_blog_text = models.CharField(max_length=50, default="博客", verbose_name=_("Menu Blog Text"))
+    menu_home_text = models.CharField(max_length=50, default="首頁", verbose_name=_("Menu Home Text"))
+    menu_about_text = models.CharField(max_length=50, default="關於GWZ", verbose_name=_("Menu About Text"))
+    menu_videos_text = models.CharField(max_length=50, default="王子煮場", verbose_name=_("Menu Videos Text"))
+    menu_lifestyle_text = models.CharField(max_length=50, default="味覺足跡", verbose_name=_("Menu Lifestyle Text"))
+    menu_store_text = models.CharField(max_length=50, default="GWZ商店", verbose_name=_("Menu Store Text"))
     menu_contact_text = models.CharField(max_length=50, default="聯絡我們", verbose_name=_("Menu Contact Text"))
-    menu_tutorial_text = models.CharField(max_length=50, default="購物流程教學", verbose_name=_("Menu Tutorial Text"))
-    menu_tutorial_link = models.CharField(max_length=200, default="#", verbose_name=_("Menu Tutorial Link"))
 
     # Colors
-    top_bar_bg_color = models.CharField(max_length=20, default="#F50057", verbose_name=_("Top Bar Bg Color"), help_text=_("Hex color code (e.g. #F50057)"))
-    navbar_bg_color = models.CharField(max_length=20, default="#D32F2F", verbose_name=_("Navbar Bg Color"), help_text=_("Hex color code (e.g. #D32F2F)"))
+    top_bar_bg_color = models.CharField(max_length=20, default="#5D2E86", verbose_name=_("Top Bar Bg Color"), help_text=_("Hex color code (e.g. #5D2E86)"))
+    navbar_bg_color = models.CharField(max_length=20, default="#5D2E86", verbose_name=_("Navbar Bg Color"), help_text=_("Hex color code (e.g. #5D2E86)"))
     navbar_text_color = models.CharField(max_length=20, default="#ffffff", verbose_name=_("Navbar Text Color"), help_text=_("Hex color code (e.g. #ffffff)"))
     navbar_items = models.TextField(default="HP, CANON, BROTHER, EPSON, SAMSUNG, XEROX, PANTUM, LEXMARK, KODAK, 其他商品", verbose_name=_("Navbar Items"), help_text=_("Comma separated list"))
-    product_label_bg_color = models.CharField(max_length=20, default="#D32F2F", verbose_name=_("Product Label Bg Color"))
+    product_label_bg_color = models.CharField(max_length=20, default="#5D2E86", verbose_name=_("Product Label Bg Color"))
     product_label_text_color = models.CharField(max_length=20, default="#ffffff", verbose_name=_("Product Label Text Color"))
 
     class Meta:
@@ -322,5 +337,5 @@ class Wishlist(models.Model):
 class SalesDashboard(models.Model):
     class Meta:
         managed = False
-        verbose_name = _('Sales Dashboard')
-        verbose_name_plural = _('Sales Dashboard')
+        verbose_name = _('銷售報表')
+        verbose_name_plural = _('銷售報表')

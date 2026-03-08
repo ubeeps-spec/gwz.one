@@ -12,83 +12,87 @@
 </div>
 
 <div class="container mb-5">
-    <div class="row">
+    <div class="row justify-content-center">
         <!-- Login Section -->
-        <div class="col-md-6 border-end">
-            <h3 class="fw-bold mb-4">{% trans "Log In" %}</h3>
-            <form method="post">
-                {% csrf_token %}
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {% for error in form.non_field_errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bold mb-4 text-center">{% trans "Log In" %}</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-warning">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 
-                <div class="mb-3">
-                    <label class="form-label">{% trans "Username or Email" %} *</label>
-                    <input type="text" name="username" class="form-control" required id="id_username" value="{{ form.username.value|default:'' }}">
-                    {% if form.username.errors %}
-                        <div class="text-danger small">{{ form.username.errors.0 }}</div>
-                    {% endif %}
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">{% trans "Password" %} *</label>
-                    <div class="input-group">
-                        <input type="password" name="password" class="form-control" required id="id_password">
-                        <span class="input-group-text bg-white" style="cursor: pointer;" id="togglePassword"><i class="far fa-eye" id="eyeIcon"></i></span>
-                    </div>
-                    {% if form.password.errors %}
-                        <div class="text-danger small">{{ form.password.errors.0 }}</div>
-                    {% endif %}
-                </div>
+                        <div class="mb-3">
+                            <label class="form-label">{% trans "Username or Email" %} *</label>
+                            <input type="text" name="username" class="form-control" required id="id_username" value="{{ form.username.value|default:'' }}">
+                            {% if form.username.errors %}
+                                <div class="text-warning small">{{ form.username.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{% trans "Password" %} *</label>
+                            <div class="input-group">
+                                <input type="password" name="password" class="form-control" required id="id_password">
+                                <span class="input-group-text bg-white" style="cursor: pointer;" id="togglePassword"><i class="far fa-eye" id="eyeIcon"></i></span>
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="text-warning small">{{ form.password.errors.0 }}</div>
+                            {% endif %}
+                        </div>
 
-                <script>
-                    document.getElementById('togglePassword').addEventListener('click', function (e) {
-                        const passwordInput = document.getElementById('id_password');
-                        const eyeIcon = document.getElementById('eyeIcon');
-                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                        passwordInput.setAttribute('type', type);
+                        <script>
+                            document.getElementById('togglePassword').addEventListener('click', function (e) {
+                                const passwordInput = document.getElementById('id_password');
+                                const eyeIcon = document.getElementById('eyeIcon');
+                                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                                passwordInput.setAttribute('type', type);
+                                
+                                // Toggle eye icon class
+                                if (type === 'text') {
+                                    eyeIcon.classList.remove('fa-eye');
+                                    eyeIcon.classList.add('fa-eye-slash');
+                                } else {
+                                    eyeIcon.classList.remove('fa-eye-slash');
+                                    eyeIcon.classList.add('fa-eye');
+                                }
+                            });
+                        </script>
                         
-                        // Toggle eye icon class
-                        if (type === 'text') {
-                            eyeIcon.classList.remove('fa-eye');
-                            eyeIcon.classList.add('fa-eye-slash');
-                        } else {
-                            eyeIcon.classList.remove('fa-eye-slash');
-                            eyeIcon.classList.add('fa-eye');
-                        }
-                    });
-                </script>
-                
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe">{% trans "Remember me" %}</label>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">{% trans "Remember me" %}</label>
+                            </div>
+                            <a href="{% url 'password_reset' %}" class="text-muted text-decoration-none small">{% trans "Lost your password?" %}</a>
+                        </div>
+
+                        <!-- Recaptcha -->
+                        <div class="mb-4">
+                            {{ form.captcha }}
+                            {% if form.captcha.errors %}
+                                <div class="text-warning small">{{ form.captcha.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-dark px-5 py-2 fw-bold">{% trans "LOG IN" %}</button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4 text-center border-top pt-4">
+                        <p class="mb-0 text-muted">
+                            {% trans "Don't have an account?" %} 
+                            <a href="{% url 'register' %}" class="text-decoration-none fw-bold">{% trans "Go Register" %}</a>
+                        </p>
                     </div>
-                    <a href="{% url 'password_reset' %}" class="text-danger text-decoration-none small">{% trans "Lost your password?" %}</a>
                 </div>
-
-                <!-- Recaptcha -->
-                <div class="mb-4">
-                    {{ form.captcha }}
-                    {% if form.captcha.errors %}
-                        <div class="text-danger small">{{ form.captcha.errors.0 }}</div>
-                    {% endif %}
-                </div>
-
-                <button type="submit" class="btn btn-danger w-100 fw-bold py-2">{% trans "LOG IN" %}</button>
-            </form>
-        </div>
-
-        <!-- Register Section -->
-        <div class="col-md-6 ps-md-5">
-            <h3 class="fw-bold mb-4">{% trans "Register" %}</h3>
-            <p class="mb-4 text-muted">
-                {% trans "Registering for this site allows you to access your order status and history. Just fill in the fields below, and we'll get a new account set up for you in no time. We will only ask you for information necessary to make the purchase process faster and easier." %}
-            </p>
-            <a href="{% url 'register' %}" class="btn btn-light border w-100 fw-bold py-2">{% trans "Register" %}</a>
+            </div>
         </div>
     </div>
 </div>

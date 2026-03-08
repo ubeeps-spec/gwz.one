@@ -10,7 +10,7 @@ from .models import Backup
 import os
 import io
 
-@admin.register(Backup)
+# @admin.register(Backup)
 class BackupAdmin(admin.ModelAdmin):
     list_display = ('name', 'backup_type', 'created_at', 'size_formatted', 'action_buttons')
     list_filter = ('backup_type', 'created_at')

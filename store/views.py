@@ -10,6 +10,8 @@ from django.contrib.auth import login
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+import os
 
 @csrf_exempt
 def stripe_webhook(request):
@@ -92,7 +94,26 @@ def coupon_apply(request):
         
     return redirect('cart_view')
 
+def index(request):
+    hero_slides = HeroSlide.objects.filter(is_active=True)
+    
+    # Get featured products (e.g., newest 4 or specific category)
+    featured_products = Product.objects.filter(is_active=True, is_featured=True).order_by('-created_at')[:4]
+
+    # Fallback: if no featured products, show newest
+    if not featured_products:
+         featured_products = Product.objects.filter(is_active=True).order_by('-created_at')[:4]
+
+    return render(request, 'index.html', {
+        'hero_slides': hero_slides,
+        'featured_products': featured_products,
+    })
+
 def product_list(request, is_shop=False):
+    # If this is the homepage URL ('/') but not explicitly the shop page, redirect to new index view
+    if request.path == '/' and not is_shop:
+         return index(request)
+
     products = Product.objects.filter(is_active=True)
     
     # Search functionality
@@ -169,7 +190,23 @@ def product_list(request, is_shop=False):
 
 def page_detail(request, slug):
     page = get_object_or_404(Page, slug=slug, is_active=True)
-    return render(request, 'store/page_detail.html', {'page': page})
+    
+    context = {'page': page}
+    
+    if slug == 'about-us':
+        book_images = []
+        book_dir = os.path.join(settings.MEDIA_ROOT, 'book')
+        if os.path.isdir(book_dir):
+            for fname in sorted(os.listdir(book_dir)):
+                lower = fname.lower()
+                if lower.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')):
+                    book_images.append({
+                        'url': settings.MEDIA_URL + 'book/' + fname,
+                        'name': os.path.splitext(fname)[0]
+                    })
+        context['book_images'] = book_images
+        
+    return render(request, 'store/page_detail.html', context)
 
 def tutorial(request):
     try:
@@ -212,9 +249,17 @@ def toggle_wishlist(request):
 
 
 @login_required
+def remove_from_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    Wishlist.objects.filter(user=request.user, product=product).delete()
+    messages.success(request, _("Removed from wishlist."))
+    return redirect('profile')
+
+
+
+@login_required
 def wishlist_view(request):
-    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product').order_by('-created_at')
-    return render(request, 'store/wishlist.html', {'wishlist_items': wishlist_items})
+    return redirect(reverse('profile') + '#wishlist')
 
 
 def _get_cart(session):
@@ -280,7 +325,7 @@ def cart_view(request):
         price = Decimal(item['price'])
         qty = int(item['qty'])
         subtotal = price * qty
-        items.append({'id': int(pid), 'name': item['name'], 'price': price, 'qty': qty, 'subtotal': subtotal})
+        items.append({'id': int(pid), 'name': item['name'], 'price': price, 'qty': qty, 'subtotal': subtotal, 'image': item.get('image', '')})
         total += subtotal
     
     # Coupon logic
@@ -416,7 +461,7 @@ def checkout(request):
         # Status logic
         if order.payment_method and order.payment_method.requires_proof:
             order.status = 'created' # Wait for verification
-        elif order.payment_method and order.payment_method.code == 'cod':
+        elif order.payment_method and order.payment_method.code in ['cod', 'cash_on_delivery']:
             order.status = 'fulfilling' # Confirmed but not yet paid
         elif order.payment_method and order.payment_method.code == 'credit_card':
             if request.POST.get('stripe_payment_intent'):
@@ -532,6 +577,8 @@ from django.contrib.auth import update_session_auth_hash
 @login_required
 def profile_view(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product').order_by('-created_at')
+    active_coupons = Coupon.objects.filter(active=True, valid_to__gte=timezone.now())
     
     # Ensure profile exists
     profile, created = UserProfile.objects.get_or_create(user=request.user)
@@ -563,6 +610,8 @@ def profile_view(request):
         
     context = {
         'orders': orders,
+        'wishlist_items': wishlist_items,
+        'active_coupons': active_coupons,
         'user_form': user_form,
         'profile_form': profile_form,
         'password_form': password_form
@@ -576,3 +625,37 @@ def user_order_detail(request, order_id):
 
 def contact_view(request):
     return render(request, 'store/contact.html')
+
+def press_gallery(request):
+    # Fetch Video/Blog content
+    try:
+        video_page = Page.objects.get(slug='blog', is_active=True)
+    except Page.DoesNotExist:
+        video_page = None
+
+    # Fetch Press Images
+    images = []
+    press_dir = os.path.join(settings.MEDIA_ROOT, 'press')
+    if os.path.isdir(press_dir):
+        for fname in sorted(os.listdir(press_dir)):
+            lower = fname.lower()
+            if lower.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')):
+                images.append({
+                    'url': settings.MEDIA_URL + 'press/' + fname,
+                    'name': os.path.splitext(fname)[0]
+                })
+
+    return render(request, 'store/press.html', {'images': images, 'video_page': video_page})
+
+def gallery_view(request):
+    images = []
+    gal_dir = os.path.join(settings.MEDIA_ROOT, 'gallery')
+    if os.path.isdir(gal_dir):
+        for fname in sorted(os.listdir(gal_dir)):
+            lower = fname.lower()
+            if lower.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')):
+                images.append({
+                    'url': settings.MEDIA_URL + 'gallery/' + fname,
+                    'name': os.path.splitext(fname)[0]
+                })
+    return render(request, 'store/gallery.html', {'images': images})

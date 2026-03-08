@@ -76,52 +76,53 @@
         <div class="col-md-5">
             <!-- Coupon Form -->
             <div class="mb-4">
-                <form action="{% url 'coupon_apply' %}" method="post" class="d-flex gap-2">
+                <form action="{% url 'coupon_apply' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{% url 'checkout' %}">
-                    <input type="text" name="code" class="form-control" placeholder="{% trans 'Coupon code' %}">
-                    <button class="btn btn-secondary" type="submit">{% trans "Apply" %}</button>
+                    <div class="input-group">
+                        <input type="text" name="code" class="form-control" placeholder="{% trans 'Coupon code' %}">
+                        <button class="btn btn-secondary text-nowrap" type="submit">{% trans "Apply" %}</button>
+                    </div>
                 </form>
             </div>
 
-            <div class="card bg-light border-0 rounded-0 p-4">
-                <h4 class="mb-4">{% trans "Your Order" %}</h4>
+            <div class="card bg-light border-0 rounded-3 shadow-sm p-3 p-md-4 mb-4">
+                <h5 class="mb-3 fw-bold">{% trans "Your Order" %}</h5>
                 
-                <table class="table table-borderless">
-                    <thead>
-                        <tr class="border-bottom">
-                            <th>{% trans "Product" %}</th>
-                            <th class="text-end">{% trans "Subtotal" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in items %}
-                        <tr class="border-bottom">
-                            <td>
-                                {{ item.name }} <strong class="mx-1">× {{ item.qty }}</strong>
-                            </td>
-                            <td class="text-end">HK${{ item.subtotal }}</td>
-                        </tr>
-                        {% endfor %}
-                        <tr class="border-bottom fw-bold">
-                            <td>{% trans "Subtotal" %}</td>
-                            <td class="text-end">HK${{ total }}</td>
-                        </tr>
-                        {% if discount > 0 %}
-                        <tr class="border-bottom text-danger fw-bold">
-                            <td>{% trans "Coupon:" %} {{ coupon.code }} <a href="{% url 'cart_view' %}" class="text-muted small ms-2 text-decoration-none">×</a></td>
-                            <td class="text-end">-HK${{ discount }}</td>
-                        </tr>
-                        {% endif %}
-                        <tr class="border-bottom fw-bold fs-5 text-danger">
-                            <td>{% trans "Total" %}</td>
-                            <td class="text-end">HK${{ grand_total }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="list-group list-group-flush bg-transparent">
+                    {% for item in items %}
+                    <div class="list-group-item bg-transparent px-0 py-2 d-flex justify-content-between align-items-start border-bottom-0 border-top-0 border-start-0 border-end-0 border-bottom">
+                        <div class="me-2">
+                            <div class="fw-medium lh-sm mb-1">{{ item.name }}</div>
+                            <div class="small text-muted">x {{ item.qty }}</div>
+                        </div>
+                        <div class="fw-bold text-nowrap">HK${{ item.subtotal }}</div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="list-group-item bg-transparent px-0 py-2 d-flex justify-content-between align-items-center border-bottom">
+                        <span class="text-muted">{% trans "Subtotal" %}</span>
+                        <span class="fw-bold">HK${{ total }}</span>
+                    </div>
+                    
+                    {% if discount > 0 %}
+                    <div class="list-group-item bg-transparent px-0 py-2 d-flex justify-content-between align-items-center border-bottom text-success">
+                        <span>
+                            {% trans "Coupon" %} <small class="text-muted">({{ coupon.code }})</small>
+                            <a href="{% url 'cart_view' %}" class="text-danger ms-1 text-decoration-none" title="Remove">&times;</a>
+                        </span>
+                        <span>-HK${{ discount }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="list-group-item bg-transparent px-0 py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                        <span class="h5 fw-bold mb-0">{% trans "Total" %}</span>
+                        <span class="h5 fw-bold text-primary mb-0">HK${{ grand_total }}</span>
+                    </div>
+                </div>
 
                 <div class="mt-4">
-                    <h5 class="mb-3">{% trans "Payment Method" %}</h5>
+                    <h5 class="mb-3 fw-bold">{% trans "Payment Method" %}</h5>
                     {% for pm in payment_methods %}
                     <div class="form-check mb-3 border-bottom pb-3">
                         <input class="form-check-input" type="radio" name="payment_method" id="pm_{{ pm.id }}" value="{{ pm.id }}" data-code="{{ pm.code }}" form="checkout-form" {% if forloop.first %}checked{% endif %} onchange="togglePaymentDetails(this)">
@@ -141,7 +142,7 @@
                             
                             {% if pm.requires_proof %}
                                 <div class="mb-2">
-                                    <label class="form-label small fw-bold text-danger">{% trans "Please upload payment proof (receipt)" %}</label>
+                                    <label class="form-label small fw-bold text-warning">{% trans "Please upload payment proof (receipt)" %}</label>
                                     <input type="file" name="payment_proof" class="form-control form-control-sm" form="checkout-form">
                                 </div>
                             {% endif %}
@@ -151,7 +152,7 @@
                                     <div class="d-flex align-items-center gap-2 mb-2">
                                         <span class="fw-bold">{% trans "Credit / Debit Card" %}</span>
                                         <i class="fab fa-cc-visa fa-2x text-primary"></i>
-                                        <i class="fab fa-cc-mastercard fa-2x text-danger"></i>
+                                        <i class="fab fa-cc-mastercard fa-2x text-warning"></i>
                                     </div>
                                 </div>
                                 <div class="row g-2 mt-2">
@@ -180,12 +181,12 @@
                                                     {% trans "Please add more items to use credit card payment, or choose another payment method." %}
                                                 </div>
                                             {% else %}
-                                                <div class="alert alert-danger small">
+                                                <div class="alert alert-warning small">
                                                     {% trans "Credit card payment is currently unavailable." %}
                                                     {% if stripe_error %}
                                                         <br><strong>{% trans "Error Details:" %}</strong> {{ stripe_error }}
                                                         <div class="mt-2">
-                                                            <a href="." class="btn btn-sm btn-outline-danger">
+                                                            <a href="." class="btn btn-sm btn-outline-primary">
                                                                 <i class="fas fa-sync-alt me-1"></i> {% trans "Reload page to retry" %}
                                                             </a>
                                                         </div>
@@ -307,17 +308,17 @@
                     </script>
 
                     <p class="small text-muted mt-3">
-                        {% trans "Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our" %} <a href="{% url 'page_detail' 'privacy' %}" target="_blank" class="text-danger">{% trans "privacy policy" %}</a>.
+                        {% trans "Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our" %} <a href="{% url 'page_detail' 'privacy' %}" target="_blank" class="text-purple">{% trans "privacy policy" %}</a>.
                     </p>
                     
                     <div class="form-check mb-3">
                         <input class="form-check-input" type="checkbox" id="terms" required form="checkout-form">
                         <label class="form-check-label small" for="terms">
-                            {% trans "I have read and agree to the website" %} <a href="{% url 'page_detail' 'terms' %}" target="_blank" class="text-danger">{% trans "terms and conditions" %}</a> *
+                            {% trans "I have read and agree to the website" %} <a href="{% url 'page_detail' 'terms' %}" target="_blank" class="text-purple">{% trans "terms and conditions" %}</a> *
                         </label>
                     </div>
 
-                    <button type="submit" form="checkout-form" class="btn btn-danger w-100 py-2 fw-bold">{% trans "Place Order" %}</button>
+                    <button type="submit" form="checkout-form" class="btn btn-warning w-100 py-2 fw-bold text-white">{% trans "Place Order" %}</button>
                 </div>
             </div>
         </div>

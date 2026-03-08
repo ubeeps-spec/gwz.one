@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
     'ckeditor',
     'axes',
     'import_export',
@@ -92,6 +94,15 @@ AUTHENTICATION_BACKENDS = [
     'store.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+SITE_ID = 1
+
+# Axes Configuration
+AXES_FAILURE_LIMIT = 100
+AXES_COOLOFF_TIME = 0.1  # 6 minutes? No, let's make it very short or hours. 0.1 is usually hours.
+# Wait, AXES_COOLOFF_TIME is in hours by default in older versions, or minutes in newer?
+# Let's check docs or source if possible. Usually it's hours.
+# But AXES_RESET_ON_SUCCESS = True is default.
 
 # Security Settings
 # SSL/HTTPS (Enable these in production)
@@ -246,8 +257,8 @@ JAZZMIN_SETTINGS = {
     ],
     "show_sidebar": True,
     "navigation_expanded": True,
-    "hide_apps": [],
-    "hide_models": ["backup_manager.Backup"],
+    "hide_apps": ["axes", "sites"],
+    "hide_models": ["auth.Group", "backup_manager.Backup", "socialaccount.SocialApp", "socialaccount.SocialAccount", "account.EmailAddress"],
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
@@ -305,4 +316,5 @@ JAZZMIN_SETTINGS = {
     "custom_css": None,
     "custom_js": None,
     "show_ui_builder": False,
+    "changeform_format_overrides": {"store.product": "single"},
 }

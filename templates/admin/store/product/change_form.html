@@ -1,0 +1,187 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+/* Mobile Optimization for Product Change Form */
+@media (max-width: 992px) {
+    /* Main Layout - Remove margins/padding that cause horizontal scroll */
+    .content, #content, .content-wrapper {
+        padding: 5px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        overflow-x: hidden;
+    }
+
+    /* Form Rows - Stack everything vertically */
+    .form-row {
+        display: block !important;
+        padding: 10px 5px !important;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .form-row > div, .form-row .fieldBox {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        float: none !important;
+    }
+
+    /* Labels */
+    .form-row label {
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+        padding: 0 !important;
+        float: none !important;
+        text-align: left !important;
+    }
+
+    /* Inputs */
+    .form-row input[type="text"], 
+    .form-row input[type="number"], 
+    .form-row input[type="email"], 
+    .form-row input[type="url"], 
+    .form-row input[type="password"], 
+    .form-row select, 
+    .form-row textarea {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        height: 40px; /* Larger touch target */
+    }
+    
+    .form-row textarea {
+        height: 100px;
+    }
+
+    /* CKEditor Specifics */
+    .django-ckeditor-widget {
+        width: 100% !important;
+        display: block !important;
+        overflow: hidden;
+    }
+    .cke {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+    .cke_inner {
+        width: 100% !important;
+    }
+    /* Toolbar wrapping */
+    .cke_top {
+        white-space: normal !important;
+        height: auto !important;
+    }
+    .cke_toolgroup {
+        float: none !important;
+        display: inline-block !important;
+    }
+
+    /* Jazzmin/Bootstrap Card Adjustments */
+    .card {
+        margin-bottom: 15px !important;
+        box-shadow: none !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 8px !important;
+    }
+    .card-header {
+        padding: 12px !important;
+        background-color: #f8f9fa !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+    }
+    .card-title {
+        font-size: 16px !important;
+        margin: 0 !important;
+    }
+    .card-body {
+        padding: 10px !important;
+    }
+
+    /* Inline forms (Images/Order Items) */
+    .inline-group .tabular td.original p {
+        left: 0 !important;
+        padding-left: 0 !important;
+        position: relative !important;
+        margin-bottom: 5px;
+    }
+    .inline-group .tabular tr.form-row {
+        display: block !important;
+        border: 1px solid #eee;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #fff;
+        border-radius: 6px;
+    }
+    .inline-group .tabular td {
+        display: block !important;
+        width: 100% !important;
+        padding: 5px 0 !important;
+        border: none !important;
+        min-height: auto !important;
+    }
+    .inline-group .tabular th {
+        display: block !important;
+        width: 100% !important;
+        padding: 5px 0 !important;
+        color: #666;
+        font-weight: bold;
+        border: none !important;
+    }
+    .inline-group .tabular thead {
+        display: none !important;
+    }
+    
+    /* Help text */
+    .help-block, .help, .help-tooltip {
+        margin-top: 5px !important;
+        margin-left: 0 !important;
+        font-size: 12px;
+        color: #666;
+    }
+    
+    /* Submit row (Save buttons) */
+    .submit-row {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 10px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 5px;
+        margin: 0 !important;
+    }
+    .submit-row input {
+        flex: 1 1 auto;
+        min-width: 100px;
+        margin: 0 !important;
+        height: 45px !important;
+        font-size: 14px !important;
+        padding: 0 10px !important;
+    }
+    /* Delete button usually has class deletelink, make it full width or separate */
+    .submit-row .deletelink {
+        width: 100% !important;
+        text-align: center;
+        margin-top: 10px !important;
+        padding: 10px !important;
+        background: #ffebee;
+        color: #c62828;
+        border-radius: 4px;
+    }
+    /* Add padding to bottom of page so submit bar doesn't cover content */
+    #content-main {
+        padding-bottom: 100px !important;
+    }
+}
+</style>
+{% endblock %}

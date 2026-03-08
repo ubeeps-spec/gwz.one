@@ -1,12 +1,29 @@
 <!doctype html>
-{% load i18n %}
+{% load i18n static %}
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}GWZ - Become a home cook with George{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}GWZ offers premium kitchenware and lifestyle products curated by George. Discover our collection of high-quality cooking tools and home essentials.{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}GWZ, George, kitchenware, cooking, home cook, lifestyle, recipes{% endblock %}">
+  <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}GWZ - Become a home cook with George{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}GWZ offers premium kitchenware and lifestyle products curated by George. Discover our collection of high-quality cooking tools and home essentials.{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}{% endblock %}">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+  <meta property="twitter:title" content="{% block twitter_title %}GWZ - Become a home cook with George{% endblock %}">
+  <meta property="twitter:description" content="{% block twitter_description %}GWZ offers premium kitchenware and lifestyle products curated by George. Discover our collection of high-quality cooking tools and home essentials.{% endblock %}">
+  <meta property="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}{% endblock %}">
+
   <!-- Favicon -->
-  {% load static %}
   <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -48,16 +65,112 @@
     gtag('config', '{{ site_settings.google_analytics_id }}');
   </script>
   {% endif %}
+
+<style>
+  /* Tablet Header Adjustments (768px - 991px) */
+  @media (min-width: 768px) and (max-width: 991px) {
+      .top-bar .container {
+          padding-left: 1rem;
+          padding-right: 1rem;
+      }
+      .main-header .col-md-3 {
+          width: 20% !important; /* Shrink logo area */
+      }
+      .main-header .col-md-5 {
+          width: 50% !important; /* Expand search area */
+      }
+      .main-header .col-md-4 {
+          width: 30% !important; /* Adjust nav area */
+      }
+      .nav-links a {
+          margin-left: 0.8rem !important; /* Reduce spacing between links */
+          font-size: 0.9rem !important; /* Slightly smaller font */
+      }
+      .header-icons {
+          margin-left: 1rem !important;
+      }
+  }
+
+  /* Mobile Bottom Navigation */
+  .mobile-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #fff;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      z-index: 1040; /* Below offcanvas (1045) */
+      height: 60px;
+      border-top: 1px solid #eee;
+  }
+
+  .mobile-bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #666;
+      font-size: 0.7rem;
+      flex: 1;
+      position: relative;
+  }
+
+  .mobile-bottom-nav .nav-item i {
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+      color: #555;
+  }
+
+  .mobile-bottom-nav .nav-item.active {
+      color: #5D2E86; /* Theme purple */
+      font-weight: bold;
+  }
+  
+  .mobile-bottom-nav .nav-item.active i {
+      color: #5D2E86;
+  }
+
+  .text-purple {
+      color: #5D2E86 !important;
+  }
+
+  /* Add padding to body so content isn't hidden behind nav */
+  @media (max-width: 767.98px) {
+      body {
+          padding-bottom: 70px;
+      }
+      /* Hide the chat widget if it overlaps, or move it up */
+      #chat-widget-container {
+          bottom: 70px !important;
+      }
+      /* Compact Search Bar on Mobile */
+      .search-container input {
+          font-size: 0.8rem !important;
+          height: 34px !important;
+          padding-left: 10px !important;
+          padding-right: 30px !important;
+      }
+      .search-container button {
+          width: 28px !important;
+          height: 28px !important;
+      }
+  }
+</style>
 </head>
 <body>
 
   <!-- Top Bar -->
-  <div class="top-bar" style="background-color: {{ site_settings.top_bar_bg_color|default:'#F50057' }};">
+  <div class="top-bar" style="background-color: {{ site_settings.top_bar_bg_color|default:'#5D2E86' }};">
     <div class="container d-flex justify-content-between align-items-center">
       <div class="social-icons">
-        <a href="{{ site_settings.facebook_url|default:'#' }}"><i class="fab fa-facebook-f"></i></a>
-        <a href="{{ site_settings.instagram_url|default:'#' }}"><i class="fab fa-instagram"></i></a>
-        <a href="{{ site_settings.whatsapp_url|default:'#' }}"><i class="fab fa-whatsapp"></i></a>
+        <a href="{{ site_settings.facebook_url|default:'#' }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="{{ site_settings.instagram_url|default:'#' }}" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="{{ site_settings.whatsapp_url|default:'#' }}" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        <a href="{{ site_settings.youtube_url|default:'#' }}" target="_blank"><i class="fab fa-youtube"></i></a>
       </div>
       <div class="d-flex align-items-center">
         <!-- Language Switcher (Desktop) - Removed -->
@@ -65,10 +178,10 @@
 
         <span class="me-3"></span>
         {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="text-white ms-2"><i class="fas fa-user"></i> {{ user.username }}</a>
+            <a href="{% url 'profile' %}" class="ms-2"><i class="fas fa-user"></i> {{ user.username }}</a>
             <form method="post" action="{% url 'logout' %}" class="d-inline ms-2">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-link text-white p-0" style="font-size: 0.9rem;">{% trans "Logout" %}</button>
+                <button type="submit" class="btn btn-link p-0" style="font-size: 0.9rem;">{% trans "Logout" %}</button>
             </form>
         {% else %}
             <a href="{% url 'login' %}"><i class="far fa-user"></i></a>
@@ -101,36 +214,31 @@
         </div>
 
         <!-- Search Bar -->
-        <div class="col-12 col-md-5 col-lg-5 order-3 order-md-2 mt-3 mt-md-0">
-          <form class="search-container" action="{% url 'product_list' %}" method="get">
-            <input type="text" name="q" class="search-input" placeholder="{% trans 'Search products' %}" value="{{ search_query|default:'' }}">
-            <select class="search-select d-none d-sm-block" name="category" onchange="this.form.submit()">
-              <option value="">{% trans "All Categories" %}</option>
-              {% for category in categories %}
-                <option value="{{ category.name }}" {% if current_category == category.name %}selected{% endif %}>{{ category.name }}</option>
-              {% endfor %}
-            </select>
-            <button type="submit" class="search-btn">
-              <i class="fas fa-search"></i>
+        <div class="col-6 col-md-5 col-lg-5 order-2 order-md-2 mt-0">
+          <form class="search-container d-flex position-relative justify-content-end" action="{% url 'shop' %}" method="get">
+            <input type="text" name="q" class="form-control rounded-pill px-3" placeholder="{% trans 'Search' %}" value="{{ search_query|default:'' }}" style="height: 38px; font-size: 0.95rem; border: 1px solid rgba(0, 0, 0, 0.15);">
+            <button type="submit" class="btn btn-link text-dark position-absolute end-0 top-50 translate-middle-y me-2 p-0" style="z-index: 10; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+              <i class="fas fa-search" style="font-size: 1rem; opacity: 0.6;"></i>
             </button>
           </form>
         </div>
 
         <!-- Nav Links & Cart -->
-        <div class="col-6 col-md-4 col-lg-4 order-2 order-md-3">
+        <div class="d-none d-md-block col-md-4 col-lg-4 order-3 order-md-3">
           <div class="d-flex justify-content-end align-items-center">
             <div class="nav-links d-none d-lg-flex">
-            <a href="{% url 'product_list' %}" class="{% if request.path == '/' %}active{% endif %}">{% if site_settings.menu_home_text %}{{ site_settings.menu_home_text }}{% else %}{% trans "Home" %}{% endif %}</a>
-            <a href="{% url 'page_detail' 'about-us' %}" class="{% if '/pages/about-us/' in request.path %}active{% endif %}">{% if site_settings.menu_about_text %}{{ site_settings.menu_about_text }}{% else %}{% trans "About Us" %}{% endif %}</a>
-            <a href="{% url 'shop' %}" class="{% if '/shop/' in request.path %}active{% endif %}">{% if site_settings.menu_store_text %}{{ site_settings.menu_store_text }}{% else %}{% trans "Store" %}{% endif %}</a>
-            <a href="{% url 'page_detail' 'blog' %}" class="{% if '/pages/blog/' in request.path %}active{% endif %}">{% if site_settings.menu_blog_text %}{{ site_settings.menu_blog_text }}{% else %}{% trans "Blog" %}{% endif %}</a>
+            <a href="{% url 'product_list' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a>
+            <a href="{% url 'page_detail' 'about-us' %}" class="{% if '/pages/about-us/' in request.path %}active{% endif %}">About</a>
+            <a href="{% url 'press' %}" class="{% if '/press/' in request.path %}active{% endif %}">Media</a>
+            <a href="{% url 'page_detail' 'lifestyle' %}" class="{% if '/pages/lifestyle/' in request.path %}active{% endif %}">Lifestyle</a>
+            <a href="{% url 'shop' %}" class="{% if '/shop/' in request.path %}active{% endif %}">Shop</a>
           </div>
             <div class="header-icons ms-4">
               <a href="#" class="cart-icon text-dark text-decoration-none" data-bs-toggle="offcanvas" data-bs-target="#shoppingCartOffcanvas" aria-controls="shoppingCartOffcanvas">
                 <i class="fas fa-shopping-basket fa-lg"></i>
                 <span class="cart-badge">{{ cart_item_count|default:0 }}</span>
               </a>
-              <a href="{% url 'wishlist' %}" class="text-dark"><i class="far fa-heart fa-lg"></i></a>
+              <a href="{% url 'wishlist' %}" class="text-dark {% if '/wishlist/' in request.path %}active{% endif %}"><i class="far fa-heart fa-lg"></i></a>
             </div>
           </div>
         </div>
@@ -149,16 +257,12 @@
         <!-- Language Switcher (Top of Menu) - Removed -->
 
 
-        <a href="{% url 'product_list' %}" class="text-dark text-decoration-none fs-5 {% if request.path == '/' %}fw-bold text-danger{% endif %}">{% if site_settings.menu_home_text %}{{ site_settings.menu_home_text }}{% else %}{% trans "Home" %}{% endif %}</a>
-        <a href="{% url 'page_detail' 'about-us' %}" class="text-dark text-decoration-none fs-5 {% if '/pages/about-us/' in request.path %}fw-bold text-danger{% endif %}">{% if site_settings.menu_about_text %}{{ site_settings.menu_about_text }}{% else %}{% trans "About Us" %}{% endif %}</a>
-        <a href="{% url 'shop' %}" class="text-dark text-decoration-none fs-5 {% if '/shop/' in request.path %}fw-bold text-danger{% endif %}">{% if site_settings.menu_store_text %}{{ site_settings.menu_store_text }}{% else %}{% trans "Store" %}{% endif %}</a>
-        <a href="{% url 'page_detail' 'blog' %}" class="text-dark text-decoration-none fs-5 {% if '/pages/blog/' in request.path %}fw-bold text-danger{% endif %}">{% if site_settings.menu_blog_text %}{{ site_settings.menu_blog_text }}{% else %}{% trans "Blog" %}{% endif %}</a>
+        <a href="{% url 'product_list' %}" class="text-dark text-decoration-none fs-5 {% if request.path == '/' %}fw-bold text-purple{% endif %}">Home</a>
+        <a href="{% url 'page_detail' 'about-us' %}" class="text-dark text-decoration-none fs-5 {% if '/pages/about-us/' in request.path %}fw-bold text-purple{% endif %}">About</a>
+        <a href="{% url 'press' %}" class="text-dark text-decoration-none fs-5 {% if '/press/' in request.path %}fw-bold text-purple{% endif %}">Media</a>
+        <a href="{% url 'page_detail' 'lifestyle' %}" class="text-dark text-decoration-none fs-5 {% if '/pages/lifestyle/' in request.path %}fw-bold text-purple{% endif %}">Lifestyle</a>
+        <a href="{% url 'shop' %}" class="text-dark text-decoration-none fs-5 {% if '/shop/' in request.path %}fw-bold text-purple{% endif %}">Shop</a>
 
-        <hr>
-        <div class="fw-bold mb-2">{% trans "Categories" %}</div>
-        {% for category in categories %}
-           <a href="{% url 'product_list' %}?category={{ category.name }}#shop-content" class="text-secondary text-decoration-none ms-3">{{ category.name }}</a>
-        {% endfor %}
         <!-- Language Switcher (Bottom) - Removed -->
 
       </div>
@@ -187,48 +291,73 @@
   <footer class="bg-dark text-white pt-5 pb-4 mt-5">
     <div class="container">
       <div class="row">
-        <!-- About -->
-        <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h5 class="text-uppercase mb-4 fw-bold text-warning">{{ site_settings.site_name|default:"GWZ" }}</h5>
-          <p>
-            {% trans "Beyond cooking, we invite you to see the world through George's eyes, sharing his experiences in travel, shopping, and different cultures." %}
-          </p>
-        </div>
+        <!-- Branding Section: Shifted Right & Constrained -->
+        <div class="col-lg-8 offset-lg-2 col-md-12 mb-4 mb-lg-0">
+          <div class="d-flex align-items-start">
+            <!-- Logo -->
+            <div class="flex-shrink-0 me-4">
+              {% if site_settings.logo %}
+                <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" style="max-height: 80px; width: auto; filter: brightness(0) invert(1);">
+              {% else %}
+                <img src="{% static 'img/logo.png' %}" alt="GWZ Logo" style="max-height: 80px; width: auto; filter: brightness(0) invert(1);">
+              {% endif %}
+            </div>
+            
+            <!-- Text & Links Block -->
+            <div class="mt-3">
+              <p class="mb-3 text-white-50 text-start small" style="line-height: 1.6;">
+                {% trans "Not just cooking, but a journey of life exploration. See the world through George's eyes and discover the unique charm of travel, shopping, and diverse cultures." %}
+              </p>
+              
+              <!-- Quick Links & Legal Links merged -->
+              <p class="mb-3 small">
+                 <a href="{% url 'product_list' %}" class="footer-link text-white-50 text-decoration-none">Home</a>
+                 <span class="mx-2 text-white-50">|</span>
+                 <a href="{% url 'page_detail' 'about-us' %}" class="footer-link text-white-50 text-decoration-none">About</a>
+                 <span class="mx-2 text-white-50">|</span>
+                 <a href="{% url 'shop' %}" class="footer-link text-white-50 text-decoration-none">Shop</a>
+                 <span class="mx-2 text-white-50">|</span>
+                 <a href="{% url 'contact' %}" class="footer-link text-white-50 text-decoration-none">Contact</a>
+                 <span class="mx-2 text-white-50">|</span>
+                 <a href="{% url 'page_detail' 'lifestyle' %}" class="footer-link text-white-50 text-decoration-none">Lifestyle</a>
+                 <span class="mx-2 text-white-50">|</span>
+                 <a href="{% url 'press' %}" class="footer-link text-white-50 text-decoration-none">Media</a>
+                 <span class="mx-2 text-white-50">|</span>
+                 <a href="{% url 'page_detail' 'privacy' %}" class="footer-link text-white-50 text-decoration-none">Privacy Policy</a>
+                 <span class="mx-2 text-white-50">|</span>
+                 <a href="{% url 'page_detail' 'terms' %}" class="footer-link text-white-50 text-decoration-none">Terms & Conditions</a>
+              </p>
 
-        <!-- Quick Links -->
-        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
-          <h5 class="text-uppercase mb-4 fw-bold text-warning">{% trans "Quick Links" %}</h5>
-          <p><a href="{% url 'product_list' %}" class="text-white text-decoration-none">{% if site_settings.menu_home_text %}{{ site_settings.menu_home_text }}{% else %}{% trans "Home" %}{% endif %}</a></p>
-          <p><a href="{% url 'page_detail' 'about-us' %}" class="text-white text-decoration-none">{% if site_settings.menu_about_text %}{{ site_settings.menu_about_text }}{% else %}{% trans "About Us" %}{% endif %}</a></p>
-          <p><a href="{% url 'product_list' %}" class="text-white text-decoration-none">{% trans "Latest Products" %}</a></p>
-          <p><a href="{% url 'contact' %}" class="text-white text-decoration-none">{% if site_settings.menu_contact_text %}{{ site_settings.menu_contact_text }}{% else %}{% trans "Contact Us" %}{% endif %}</a></p>
-          <p><a href="{% url 'page_detail' 'privacy' %}" class="text-white text-decoration-none">{% trans "Privacy Policy" %}</a></p>
-          <p><a href="{% url 'page_detail' 'terms' %}" class="text-white text-decoration-none">{% trans "Terms & Conditions" %}</a></p>
-        </div>
-
-        <!-- Contact -->
-        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h5 class="text-uppercase mb-4 fw-bold text-warning">{% trans "Contact Info" %}</h5>
-          <p><i class="fas fa-home mr-3"></i> {{ site_settings.contact_address|default:"Hong Kong" }}</p>
-          <p><i class="fas fa-envelope mr-3"></i> {{ site_settings.contact_email|default:"info@gwz.one" }}</p>
-          <p><i class="fas fa-phone mr-3"></i> {{ site_settings.contact_phone|default:"" }}</p>
-        </div>
-
-        <!-- Social -->
-        <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
-           <h5 class="text-uppercase mb-4 fw-bold text-warning">{% trans "Follow Us" %}</h5>
-           <div class="d-flex gap-3">
-             <a href="{{ site_settings.facebook_url|default:'#' }}" class="btn btn-outline-light btn-floating m-1 text-white" role="button"><i class="fab fa-facebook-f"></i></a>
-             <a href="{{ site_settings.instagram_url|default:'#' }}" class="btn btn-outline-light btn-floating m-1 text-white" role="button"><i class="fab fa-instagram"></i></a>
-           </div>
+              <!-- Social Icons -->
+              <div class="d-flex gap-3 mb-3">
+                 <a href="{{ site_settings.facebook_url|default:'#' }}" class="social-link fs-6" role="button" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                 <a href="{{ site_settings.instagram_url|default:'#' }}" class="social-link fs-6" role="button" target="_blank"><i class="fab fa-instagram"></i></a>
+                 <a href="{{ site_settings.youtube_url|default:'#' }}" class="social-link fs-6" role="button" target="_blank"><i class="fab fa-youtube"></i></a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <hr class="mb-4">
+      <hr class="mb-3 opacity-25">
+      
+      <style>
+        .footer-link:hover {
+            color: var(--primary-yellow) !important;
+        }
+        .social-link {
+            color: rgba(255, 255, 255, 0.75);
+            transition: all 0.3s ease;
+        }
+        .social-link:hover {
+            color: var(--primary-yellow) !important;
+            opacity: 1;
+        }
+      </style>
 
       <div class="row align-items-center">
-        <div class="col-md-7 col-lg-8">
-          <p>{{ site_settings.footer_copyright|default:"Copyright © 2026 GWZ. All rights reserved." }}</p>
+        <div class="col-12 text-center">
+          <p class="mb-0 text-white-50 small" style="font-size: 0.8rem;">Copyright 2026 GWZ. All rights reserved.</p>
         </div>
       </div>
     </div>
@@ -258,7 +387,7 @@
               <!-- Details -->
               <div class="flex-grow-1 ms-3">
                   <h6 class="mb-0 text-truncate" style="max-width: 150px;">{{ item.name }}</h6>
-                  <small>{{ item.qty }} x <span class="text-danger fw-bold">HK${{ item.price }}</span></small>
+                  <small>{{ item.qty }} x <span class="text-purple fw-bold">HK${{ item.price }}</span></small>
               </div>
               <!-- Remove Button -->
               <div class="flex-shrink-0 ms-2">
@@ -269,7 +398,7 @@
         {% else %}
           <div class="text-center py-5">
               <p class="text-muted">{% trans "Your cart is empty." %}</p>
-              <a href="{% url 'product_list' %}" class="btn btn-warning text-white">{% trans "Start Shopping" %}</a>
+              <a href="{% url 'shop' %}" class="btn btn-warning text-white">{% trans "Start Shopping" %}</a>
           </div>
         {% endif %}
       </div>
@@ -289,7 +418,7 @@
               <a href="{% url 'cart_view' %}" class="btn btn-light border">{% trans "View Cart" %}</a>
               
               <!-- Checkout (Red/Pink) -->
-              <a href="{% url 'checkout' %}" class="btn btn-danger text-white">{% trans "Checkout" %}</a>
+              <a href="{% url 'checkout' %}" class="btn btn-warning text-white">{% trans "Checkout" %}</a>
           </div>
       </div>
       {% endif %}
@@ -297,7 +426,105 @@
     </div>
   </div>
 
+  <!-- Gallery Lightbox Modal -->
+  <div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content bg-transparent border-0 shadow-none">
+        <div class="modal-body p-0 position-relative text-center">
+            <!-- Close Button -->
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-index-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            
+            <!-- Main Image -->
+            <img src="" id="galleryModalImage" class="img-fluid rounded shadow-lg" style="max-height: 90vh; object-fit: contain;">
+            
+            <!-- Navigation Buttons -->
+            <button class="btn btn-dark position-absolute top-50 start-0 translate-middle-y ms-2 opacity-75 rounded-circle p-3" id="galleryPrevBtn">
+                <i class="fas fa-chevron-left fa-lg"></i>
+            </button>
+            <button class="btn btn-dark position-absolute top-50 end-0 translate-middle-y me-2 opacity-75 rounded-circle p-3" id="galleryNextBtn">
+                <i class="fas fa-chevron-right fa-lg"></i>
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gallery Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalElement = document.getElementById('galleryModal');
+        const modalImage = document.getElementById('galleryModalImage');
+        const prevBtn = document.getElementById('galleryPrevBtn');
+        const nextBtn = document.getElementById('galleryNextBtn');
+        
+        let currentCategoryItems = [];
+        let currentIndex = -1;
+
+        // Hook into Bootstrap's modal show event
+        modalElement.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            const triggerElement = event.relatedTarget;
+            
+            // Extract info from data attributes
+            const src = triggerElement.getAttribute('data-bs-image');
+            const category = triggerElement.getAttribute('data-bs-category');
+            
+            // Update Image
+            modalImage.src = src;
+            
+            // Find all items in this category for navigation
+            currentCategoryItems = Array.from(document.querySelectorAll(`.gallery-item[data-bs-category="${category}"]`));
+            currentIndex = currentCategoryItems.indexOf(triggerElement);
+            
+            // Show/Hide buttons based on count
+            if (currentCategoryItems.length <= 1) {
+                prevBtn.classList.add('d-none');
+                nextBtn.classList.add('d-none');
+            } else {
+                prevBtn.classList.remove('d-none');
+                nextBtn.classList.remove('d-none');
+            }
+        });
+
+        // Navigation Functions
+        function showImage(index) {
+            if (currentCategoryItems.length === 0) return;
+            
+            // Wrap around
+            if (index < 0) index = currentCategoryItems.length - 1;
+            if (index >= currentCategoryItems.length) index = 0;
+            
+            currentIndex = index;
+            const item = currentCategoryItems[currentIndex];
+            const src = item.getAttribute('data-bs-image');
+            
+            modalImage.src = src;
+        }
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showImage(currentIndex - 1);
+        });
+        
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showImage(currentIndex + 1);
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (modalElement.classList.contains('show')) {
+                if (e.key === 'ArrowLeft') showImage(currentIndex - 1);
+                if (e.key === 'ArrowRight') showImage(currentIndex + 1);
+            }
+        });
+    });
+  </script>
+
+  <!-- Bootstrap 5 JS Bundle (includes Popper) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/yt-lazy.js' %}?v=5"></script>
+  {% block scripts %}{% endblock %}
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -373,5 +600,41 @@
         });
     });
   </script>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-bottom-nav d-md-none">
+    <a href="{% url 'product_list' %}" class="nav-item {% if request.path == '/' %}active{% endif %}">
+      <i class="fas fa-home"></i>
+      <span>主頁</span>
+    </a>
+    
+    <a href="{% url 'shop' %}" class="nav-item {% if '/shop/' in request.path %}active{% endif %}">
+      <i class="fas fa-th-large"></i>
+      <span>商品</span>
+    </a>
+
+    <a href="{% url 'wishlist' %}" class="nav-item {% if '/wishlist/' in request.path %}active{% endif %}">
+      <i class="fas fa-heart"></i>
+      <span>我的最愛</span>
+    </a>
+
+    <a href="#" class="nav-item" data-bs-toggle="offcanvas" data-bs-target="#shoppingCartOffcanvas">
+      <div class="position-relative">
+          <i class="fas fa-shopping-cart"></i>
+          {% if cart_item_count > 0 %}
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" style="font-size: 0.6rem; padding: 0.25em 0.4em;">
+              {{ cart_item_count }}
+          </span>
+          {% endif %}
+      </div>
+      <span>購物車</span>
+    </a>
+
+    <a href="{% url 'profile' %}" class="nav-item {% if '/accounts/' in request.path %}active{% endif %}">
+      <i class="fas fa-user"></i>
+      <span>會員</span>
+    </a>
+  </nav>
+
 </body>
 </html>

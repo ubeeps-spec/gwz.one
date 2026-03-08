@@ -38,7 +38,7 @@ admin.site.login_form = RecaptchaAdminLoginForm
 
 from django.utils.translation import gettext_lazy as _
 
-@admin.action(description=_('Duplicate selected products'))
+@admin.action(description=_('複製所選商品'))
 def duplicate_product(modeladmin, request, queryset):
     for product in queryset:
         # Capture categories before resetting pk
@@ -58,18 +58,26 @@ def duplicate_product(modeladmin, request, queryset):
         
         # Restore categories for the new instance
         product.categories.set(categories)
-duplicate_product.short_description = _("Duplicate selected products")
+duplicate_product.short_description = _("複製所選商品")
 
 @admin.register(Category)
-class CategoryAdmin(TranslationAdmin):
+class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
 
-@admin.register(Page)
-class PageAdmin(TranslationAdmin):
-    list_display = ('title', 'slug', 'is_active', 'updated_at')
-    prepopulated_fields = {'slug': ('title',)}
-
+# @admin.register(Page)
+# class PageAdmin(TranslationAdmin):
+#     list_display = ('title', 'slug', 'is_active', 'updated_at')
+#     prepopulated_fields = {'slug': ('title',)}
+#     fieldsets = (
+#         (_('Basic Information'), {
+#             'fields': ('title', 'slug', 'content', 'is_active')
+#         }),
+#         (_('About Us Page Settings'), {
+#             'fields': ('feature_title', 'feature_subtitle', 'feature_image', 'founder_image', 'founder_name', 'founder_intro_title', 'founder_intro_text'),
+#             'description': _('These settings only apply to the About Us page.')
+#         }),
+#     )
 
 @admin.register(HeroSlide)
 class HeroSlideAdmin(TranslationAdmin):
@@ -78,38 +86,20 @@ class HeroSlideAdmin(TranslationAdmin):
     ordering = ('sort_order',)
 
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(TranslationAdmin):
+class SiteSettingsAdmin(admin.ModelAdmin):
     fieldsets = (
-        (_('Basic Settings'), {
+        (_('基本設定'), {
             'fields': ('site_name', 'logo')
         }),
-        (_('Home Banner Settings'), {
-            'fields': ('hero_banner', 'hero_title', 'hero_subtitle', 'hero_button_text', 'hero_link')
+        (_('聯絡頁面設定'), {
+            'fields': ('contact_phone', 'contact_email', 'contact_address', 'contact_opening_hours')
         }),
-        (_('Feature Section (Middle)'), {
-            'fields': ('feature_title', 'feature_subtitle', 'feature_image')
+        (_('社群媒體'), {
+            'fields': ('facebook_url', 'instagram_url', 'youtube_url', 'whatsapp_url')
         }),
-        (_('Founder Section (About Us)'), {
-            'fields': ('founder_image', 'founder_name', 'founder_intro_title', 'founder_intro_text')
-        }),
-        (_('Contact Info (Footer)'), {
-            'fields': ('contact_phone', 'contact_email', 'contact_address', 'footer_about', 'footer_copyright')
-        }),
-        (_('Social Media'), {
-            'fields': ('facebook_url', 'instagram_url', 'whatsapp_url')
-        }),
-        (_('Appearance Settings (Menu & Labels)'), {
-            'fields': ('top_bar_bg_color', 'navbar_bg_color', 'navbar_text_color', 'navbar_items', 'product_label_bg_color', 'product_label_text_color')
-        }),
-        (_('Main Menu Text Settings'), {
-            'fields': ('menu_home_text', 'menu_store_text', 'menu_about_text', 'menu_blog_text', 'menu_contact_text', 'menu_tutorial_text', 'menu_tutorial_link')
-        }),
-        (_('Tracking Codes'), {
-            'fields': ('facebook_pixel_id', 'google_analytics_id')
-        }),
-        (_('Email Settings (SMTP)'), {
+        (_('郵件設定 (SMTP)'), {
             'fields': ('smtp_host', 'smtp_port', 'smtp_user', 'smtp_password', 'smtp_use_tls', 'smtp_from_email'),
-            'description': _('Configure SMTP server settings for sending system emails (e.g., password reset).')
+            'description': _('設定 SMTP 伺服器以發送系統郵件（如重設密碼）。')
         }),
     )
 
@@ -119,7 +109,7 @@ class SiteSettingsAdmin(TranslationAdmin):
             return False
         return super().has_add_permission(request)
 
-@admin.action(description=_('Download Import Template'))
+@admin.action(description=_('下載匯入範本'))
 def download_template(modeladmin, request, queryset):
     wb = Workbook()
     ws = wb.active
@@ -145,16 +135,27 @@ class CleanManyToManyWidget(ManyToManyWidget):
         return super().clean(value, row, *args, **kwargs)
 
 class ProductResource(resources.ModelResource):
+    name = fields.Field(attribute='name', column_name=_('商品名稱'))
+    slug = fields.Field(attribute='slug', column_name=_('網址代稱'))
+    sku = fields.Field(attribute='sku', column_name=_('商品編號 (SKU)'))
+    price = fields.Field(attribute='price', column_name=_('價格'))
+    discount_price = fields.Field(attribute='discount_price', column_name=_('特價'))
+    stock = fields.Field(attribute='stock', column_name=_('庫存'))
     categories = fields.Field(
-        column_name='categories',
+        column_name=_('分類'),
         attribute='categories',
         widget=CleanManyToManyWidget(Category, field='name', separator=',')
     )
-    image_urls = fields.Field(column_name='image_urls', attribute='image_urls')
+    description = fields.Field(attribute='description', column_name=_('描述'))
+    specs = fields.Field(attribute='specs', column_name=_('規格'))
+    image_url = fields.Field(attribute='image_url', column_name=_('圖片網址'))
+    image_urls = fields.Field(column_name=_('所有圖片網址'), attribute='image_urls')
+    is_active = fields.Field(attribute='is_active', column_name=_('是否上架'))
 
     class Meta:
         model = Product
         fields = ('id', 'name', 'slug', 'sku', 'price', 'discount_price', 'stock', 'categories', 'description', 'specs', 'image_url', 'image_urls', 'is_active')
+        export_order = ('id', 'name', 'sku', 'categories', 'price', 'discount_price', 'stock', 'is_active', 'image_url', 'image_urls', 'description', 'specs', 'slug')
         import_id_fields = ('id',)
         # We disable skip_unchanged to ensure our custom image processing logic
         # in after_save_instance ALWAYS runs, even if the main fields haven't changed.
@@ -178,68 +179,83 @@ class ProductResource(resources.ModelResource):
     def before_import_row(self, row, **kwargs):
         print(f"DEBUG: before_import_row called. keys: {list(row.keys())}", flush=True)
         
-        # Support Chinese/Alternate Headers mapping
-        # Map common Chinese headers to model fields if the English ones are missing
+        # Support English/Alternate Headers mapping to Chinese (Canonical)
+        # Map common English/Chinese headers to the Chinese column_name defined in fields
         header_map = {
-            '名稱': 'name', '商品名稱': 'name', '品名': 'name',
-            '貨號': 'sku', 'SKU': 'sku',
-            '價格': 'price', '售價': 'price',
-            '特價': 'discount_price', '優惠價': 'discount_price',
-            '庫存': 'stock', '數量': 'stock',
-            '分類': 'categories', '類別': 'categories',
-            '描述': 'description', '商品描述': 'description',
-            '規格': 'specs', '商品規格': 'specs',
-            '上架': 'is_active', '是否上架': 'is_active',
+            # Canonical: '商品名稱'
+            'name': '商品名稱', 'product name': '商品名稱', '名稱': '商品名稱', '品名': '商品名稱',
+            # Canonical: '商品編號 (SKU)'
+            'sku': '商品編號 (SKU)', '貨號': '商品編號 (SKU)',
+            # Canonical: '價格'
+            'price': '價格', '售價': '價格',
+            # Canonical: '特價'
+            'discount_price': '特價', '優惠價': '特價', 'discount': '特價',
+            # Canonical: '庫存'
+            'stock': '庫存', '數量': '庫存', 'quantity': '庫存',
+            # Canonical: '分類'
+            'categories': '分類', 'category': '分類', '類別': '分類',
+            # Canonical: '描述'
+            'description': '描述', '商品描述': '描述',
+            # Canonical: '規格'
+            'specs': '規格', 'specifications': '規格', '商品規格': '規格',
+            # Canonical: '是否上架'
+            'is_active': '是否上架', 'active': '是否上架', '上架': '是否上架',
+            # Canonical: '圖片網址'
+            'image_url': '圖片網址', 'image': '圖片網址',
+            # Canonical: '所有圖片網址'
+            'image_urls': '所有圖片網址', 'images': '所有圖片網址',
+            # Canonical: '網址代稱'
+            'slug': '網址代稱',
         }
         
-        for ch_key, en_key in header_map.items():
-            if ch_key in row and not row.get(en_key):
-                row[en_key] = row[ch_key]
-
-        # Case-insensitive mapping for standard fields
-        # This handles 'Price' -> 'price', 'Name' -> 'name', etc.
-        standard_fields = ['name', 'sku', 'price', 'discount_price', 'stock', 'categories', 'description', 'specs', 'image_url', 'image_urls', 'is_active']
+        # Normalize input keys to Canonical Chinese Keys
         for key in list(row.keys()):
             key_lower = key.strip().lower()
-            if key_lower in standard_fields:
-                # If the lowercase standard field is missing in the row, but we found a case-variant
-                if not row.get(key_lower):
-                    row[key_lower] = row[key]
+            if key_lower in header_map:
+                canonical = header_map[key_lower]
+                if canonical not in row:
+                    row[canonical] = row[key]
 
         super().before_import_row(row, **kwargs)
         
         # Ensure non-nullable text fields are empty strings if missing or None
-        if row.get('description') is None:
-            row['description'] = ''
-        if row.get('specs') is None:
-            row['specs'] = ''
-        if row.get('image_url') is None:
-            row['image_url'] = ''
+        # Use Canonical Chinese Keys
+        if row.get('描述') is None:
+            row['描述'] = ''
+        if row.get('規格') is None:
+            row['規格'] = ''
+        if row.get('圖片網址') is None:
+            row['圖片網址'] = ''
             
         # Handle "No SKU" case by auto-generating one
-        # If SKU is missing/empty, generate one from Name or UUID
-        sku_val = row.get('sku')
+        sku_val = row.get('商品編號 (SKU)')
         if not sku_val or str(sku_val).strip() == '':
             import uuid
             # Try to use a sanitized name slug first, else random
-            if row.get('name'):
+            name_val = row.get('商品名稱')
+            if name_val:
                 from django.utils.text import slugify
-                base = slugify(str(row.get('name')))[:20].upper()
-                if not base: base = "PROD"
+                # slugify might return empty for pure Chinese, so we need a fallback
+                # But here we just want a prefix.
+                base = str(name_val)[:10]
+                # If slugify works (e.g. alphanumeric), use it, otherwise use raw hex or something
+                # Actually, slugify removes non-ascii by default in Django unless allow_unicode=True
+                # Let's just use a random prefix if slugify fails or just "PROD"
+                # Simpler:
+                base = "PROD"
                 # Add random suffix to ensure uniqueness
-                row['sku'] = f"{base}-{uuid.uuid4().hex[:6].upper()}"
+                row['商品編號 (SKU)'] = f"{base}-{uuid.uuid4().hex[:8].upper()}"
             else:
-                row['sku'] = f"SKU-{uuid.uuid4().hex[:8].upper()}"
+                row['商品編號 (SKU)'] = f"SKU-{uuid.uuid4().hex[:8].upper()}"
 
         # Validate Name and Price (Critical fields)
-        # We do this after the mapping above to ensure we caught Chinese headers
-        name_val = row.get('name')
+        name_val = row.get('商品名稱')
         if not name_val or str(name_val).strip() == '':
-            raise ValueError(_("Data Error: Product Name is required, please check Excel content."))
+            raise ValueError(_("資料錯誤：商品名稱為必填，請檢查 Excel 內容。"))
 
-        price_val = row.get('price')
+        price_val = row.get('價格')
         if price_val is None or str(price_val).strip() == '':
-             raise ValueError(_("Data Error: Price is required, please check Excel content."))
+             raise ValueError(_("資料錯誤：價格為必填，請檢查 Excel 內容。"))
 
     def before_save_instance(self, instance, row, **kwargs):
         # Check if SKU already exists in another product to prevent IntegrityError crash
@@ -249,7 +265,7 @@ class ProductResource(resources.ModelResource):
                 qs = qs.exclude(pk=instance.pk)
             if qs.exists():
                 # This will be caught by import-export and shown as a row error
-                raise Exception(_("Error: SKU '%(sku)s' already exists in another product, please ensure SKU is unique.") % {'sku': instance.sku})
+                raise Exception(_("錯誤：SKU '%(sku)s' 已存在於其他商品中，請確保 SKU 唯一。") % {'sku': instance.sku})
         
         super().before_save_instance(instance, row, **kwargs)
 
@@ -330,11 +346,17 @@ class ProductResource(resources.ModelResource):
                 instance.save(update_fields=['image_url'])
 
 @admin.register(Product)
-class ProductAdmin(ImportExportModelAdmin, TranslationAdmin):
+class ProductAdmin(ImportExportModelAdmin):
+    change_list_template = 'admin/store/product/custom_product_list.html'
+    change_form_template = 'admin/store/product/change_form.html'
     list_per_page = 20
+
+    def changelist_view(self, request, extra_context=None):
+        return super().changelist_view(request, extra_context=extra_context)
     resource_class = ProductResource
-    list_display = ('product_thumbnail', 'name', 'sku', 'stock_status', 'price', 'discount_price', 'get_categories', 'is_active', 'updated_at')
-    list_filter = ('is_active', 'categories')
+    list_display = ('product_thumbnail', 'name', 'sku', 'stock_status', 'price', 'discount_price', 'is_active', 'is_featured')
+    list_filter = ('is_active', 'is_featured', 'categories')
+    list_editable = ('is_active', 'is_featured')
     search_fields = ('name', 'sku', 'categories__name')
     prepopulated_fields = {'slug': ('name',)}
     actions = [duplicate_product, download_template]
@@ -344,26 +366,26 @@ class ProductAdmin(ImportExportModelAdmin, TranslationAdmin):
     }
     
     fieldsets = (
-        (_('Product Data'), {
-            'fields': ('name', 'slug', 'sku', 'description', 'specs', 'is_active')
+        (_('商品資料'), {
+            'fields': ('name', 'slug', 'sku', 'description', 'specs', 'is_active', 'is_featured')
         }),
-        (_('Price & Stock'), {
+        (_('價格與庫存'), {
             'fields': ('price', 'discount_price', 'stock')
         }),
-        (_('Categories & Tags'), {
+        (_('分類與標籤'), {
             'fields': ('categories',)
         }),
-        (_('Images'), {
+        (_('主圖設定 (Main Image)'), {
             'fields': ('image', 'image_url'),
-            'description': _('Upload an image or enter an image URL (choose one). If both are provided, the uploaded image will be displayed first.')
+            'description': _('上傳圖片或輸入圖片網址（二擇一）。若兩者皆提供，將優先顯示上傳的圖片。')
         }),
     )
     
-    inlines = []
-    
-    class ProductImageInline(admin.StackedInline):
+    class ProductImageInline(admin.TabularInline):
         model = ProductImage
         extra = 1
+        verbose_name = "更多圖片 (Additional Images)"
+        verbose_name_plural = "更多圖片 (Additional Images)"
         fields = ('image', 'image_url', 'caption', 'sort_order', 'preview')
         readonly_fields = ('preview',)
         
@@ -374,13 +396,13 @@ class ProductAdmin(ImportExportModelAdmin, TranslationAdmin):
             elif obj.image_url:
                 return format_html('<img src="{}" style="max-height:120px;"/>', obj.image_url)
             return "-"
-        preview.short_description = _('Preview')
+        preview.short_description = _('預覽')
     
     inlines = [ProductImageInline]
     
     def shipping_address_display(self, obj):
         return obj.address
-    shipping_address_display.short_description = _("Shipping Address")
+    shipping_address_display.short_description = _("運送地址")
 
     def get_urls(self):
         urls = super().get_urls()
@@ -390,7 +412,7 @@ class ProductAdmin(ImportExportModelAdmin, TranslationAdmin):
         return custom + urls
     
     def upload_images_view(self, request):
-        context = {**self.admin_site.each_context(request), 'opts': self.model._meta, 'title': _('Batch Upload Product Images (ZIP)')}
+        context = {**self.admin_site.each_context(request), 'opts': self.model._meta, 'title': _('批次上傳商品圖片 (ZIP)')}
         if request.method == 'POST' and request.FILES.get('zip_file'):
             zf = request.FILES['zip_file']
             tmpdir = tempfile.mkdtemp()
@@ -431,14 +453,14 @@ class ProductAdmin(ImportExportModelAdmin, TranslationAdmin):
                             pass
             context['result'] = {'created': created, 'updated_products': len(updated_products)}
             from django.contrib import messages
-            messages.success(request, _('Created %(created)d images, updated %(updated)d products') % {'created': created, 'updated': len(updated_products)})
+            messages.success(request, _('已建立 %(created)d 張圖片，更新了 %(updated)d 個商品') % {'created': created, 'updated': len(updated_products)})
             return redirect('admin:store_product_changelist')
         from django.template.response import TemplateResponse
         return TemplateResponse(request, 'admin/store/product/upload_images.html', context)
 
     def get_categories(self, obj):
         return ", ".join([c.name for c in obj.categories.all()])
-    get_categories.short_description = _('Categories')
+    get_categories.short_description = _('分類')
 
     def product_thumbnail(self, obj):
         from django.utils.html import format_html
@@ -454,29 +476,29 @@ class ProductAdmin(ImportExportModelAdmin, TranslationAdmin):
             elif first_img.image:
                 return format_html('<img src="{}" style="width: 50px; height: 50px; object-fit: cover;" />', first_img.image.url)
         return "-"
-    product_thumbnail.short_description = _('Image')
+    product_thumbnail.short_description = _('圖片')
 
     def stock_status(self, obj):
         from django.utils.html import format_html
         if obj.stock > 0:
-            return format_html('<span style="color: green; font-weight: bold;">{} ({})</span>', _("In Stock"), obj.stock)
-        return format_html('<span style="color: red; font-weight: bold;">{}</span>', _("Out of Stock"))
-    stock_status.short_description = _('Stock Status')
+            return format_html('<span style="color: green; font-weight: bold;">{}</span>', obj.stock)
+        return format_html('<span style="color: red; font-weight: bold;">{}</span>', obj.stock)
+    stock_status.short_description = _('庫存')
 
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
     readonly_fields = ('subtotal',)
-    verbose_name = _("Order Item")
-    verbose_name_plural = _("Order Items")
+    verbose_name = _("訂單項目")
+    verbose_name_plural = _("訂單項目")
 
 
 class OrderNoteInline(admin.StackedInline):
     model = OrderNote
     extra = 1
-    verbose_name = _("Order Note")
-    verbose_name_plural = _("Order Notes")
+    verbose_name = _("訂單備註")
+    verbose_name_plural = _("訂單備註")
 
 
 @admin.register(Coupon)
@@ -489,10 +511,10 @@ class CouponAdmin(admin.ModelAdmin):
         (None, {
             'fields': ('code', 'description', 'active')
         }),
-        (_('Discount Settings'), {
+        (_('折扣設定'), {
             'fields': ('discount_type', 'discount')
         }),
-        (_('Validity'), {
+        (_('有效期限'), {
             'fields': ('valid_from', 'valid_to')
         }),
     )
@@ -501,7 +523,7 @@ class CouponAdmin(admin.ModelAdmin):
         if obj.discount_type == 'percent':
             return f"{obj.discount}%"
         return f"HK${obj.discount}"
-    discount_display.short_description = _("Discount")
+    discount_display.short_description = _("折扣")
 
 
 @admin.register(PaymentMethod)
@@ -518,10 +540,10 @@ class PaymentMethodAdmin(admin.ModelAdmin):
 
 
 class OrderResource(resources.ModelResource):
-    items_summary = fields.Field(column_name=_('Items'))
-    payment_method_display = fields.Field(column_name=_('Payment Method'))
-    status_display = fields.Field(column_name=_('Order Status'))
-    created_at_display = fields.Field(column_name=_('Order Date'))
+    items_summary = fields.Field(column_name=_('訂單項目'))
+    payment_method_display = fields.Field(column_name=_('付款方式'))
+    status_display = fields.Field(column_name=_('訂單狀態'))
+    created_at_display = fields.Field(column_name=_('訂單日期'))
 
     class Meta:
         model = Order
@@ -550,18 +572,58 @@ class OrderAdmin(ImportExportModelAdmin):
     list_filter = ('status', 'payment_method')
     search_fields = ('order_number', 'customer_name', 'email', 'phone')
     inlines = [OrderItemInline]
-    readonly_fields = ('order_number', 'invoice_view_link', 'total_amount', 'discount_amount', 'payment_proof_preview', 'ip_address', 'shipping_address_display')
+    readonly_fields = ('order_number', 'invoice_view_link', 'total_amount', 'discount_amount', 'payment_proof_preview', 'ip_address', 'shipping_address_display', 'created_at')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj: # editing an existing object
+            return self.readonly_fields + ('user_link',)
+        return self.readonly_fields
+
+    def user_link(self, obj):
+        from django.urls import reverse
+        from django.utils.html import format_html
+        if obj.user:
+            # Check if user is staff (backend user) or customer
+            if obj.user.is_staff:
+                try:
+                    url = reverse('admin:auth_user_change', args=[obj.user.id])
+                    return format_html('<a href="{}">{} (Staff)</a>', url, obj.user.username)
+                except:
+                    return obj.user.username
+            else:
+                # Use Customer admin for customers
+                try:
+                    url = reverse('admin:store_customer_change', args=[obj.user.id])
+                    return format_html('<a href="{}">{}</a>', url, obj.user.username)
+                except:
+                    return obj.user.username
+        return "-"
+    user_link.short_description = _("User Account")
+
+    def get_fieldsets(self, request, obj=None):
+        if not obj:
+            return self.fieldsets
+        
+        new_fieldsets = []
+        for name, opts in self.fieldsets:
+            new_opts = opts.copy()
+            fields = list(new_opts['fields'])
+            if 'user' in fields:
+                fields[fields.index('user')] = 'user_link'
+            new_opts['fields'] = tuple(fields)
+            new_fieldsets.append((name, new_opts))
+        return tuple(new_fieldsets)
 
     fieldsets = (
-        (_('General'), {
+        (_('一般資訊'), {
             'classes': ('box-general',),
             'fields': ('created_at', 'status', 'user', 'ip_address')
         }),
-        (_('Billing'), {
+        (_('帳單資訊'), {
             'classes': ('box-billing',),
             'fields': ('customer_name', 'address', 'email', 'phone', 'payment_method', 'payment_proof', 'payment_proof_preview')
         }),
-        (_('Shipping'), {
+        (_('運送資訊'), {
             'classes': ('box-shipping',),
             'fields': ('shipping_address_display',)
         }),
@@ -569,7 +631,7 @@ class OrderAdmin(ImportExportModelAdmin):
     
     def shipping_address_display(self, obj):
         return obj.address
-    shipping_address_display.short_description = _("Shipping Address")
+    shipping_address_display.short_description = _("運送地址")
 
     def get_urls(self):
         urls = super().get_urls()
@@ -618,25 +680,25 @@ class OrderAdmin(ImportExportModelAdmin):
         if request.method == 'POST':
             order = Order.objects.get(pk=order_id)
             message = request.POST.get('note_content')
-            is_customer = request.POST.get('is_customer_note') == 'on'
+            is_customer_note = request.POST.get('is_customer_note') == 'on'
             if message:
                 OrderNote.objects.create(
                     order=order,
                     user=request.user,
                     message=message,
-                    is_customer_note=is_customer
+                    is_customer_note=is_customer_note
                 )
                 
-                if is_customer and order.email:
-                    subject = f"{_('Order Note Notification')} - {order.order_number}"
+                if is_customer_note and order.email:
+                    subject = f"{_('訂單備註通知')} - {order.order_number}"
                     email_message = f"""
-{_('Dear')} {order.customer_name},
+{_('親愛的')} {order.customer_name},
 
-{_('Your order')} {order.order_number} {_('has a new note:')}
+{_('您的訂單')} {order.order_number} {_('有新的備註：')}
 
 {message}
 
-{_('Thank you!')}
+{_('謝謝！')}
 """
                     try:
                         send_mail(
@@ -647,13 +709,13 @@ class OrderAdmin(ImportExportModelAdmin):
                             fail_silently=True
                         )
                         from django.contrib import messages
-                        messages.success(request, _('Note added and email sent to customer'))
+                        messages.success(request, _('已新增備註並發送郵件給客戶'))
                     except Exception as e:
                         from django.contrib import messages
-                        messages.warning(request, _('Note added but failed to send email: %(error)s') % {'error': e})
+                        messages.warning(request, _('已新增備註但發送郵件失敗：%(error)s') % {'error': e})
                 else:
                     from django.contrib import messages
-                    messages.success(request, _('Note added'))
+                    messages.success(request, _('已新增備註'))
             return redirect('admin:store_order_change', order_id)
         return redirect('admin:store_order_change', order_id)
 
@@ -662,7 +724,7 @@ class OrderAdmin(ImportExportModelAdmin):
         order_id = note.order.id
         note.delete()
         from django.contrib import messages
-        messages.success(request, _('Note deleted'))
+        messages.success(request, _('備註已刪除'))
         return redirect('admin:store_order_change', order_id)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
@@ -701,22 +763,22 @@ class OrderAdmin(ImportExportModelAdmin):
         from django.utils.html import format_html
         if obj.payment_proof:
              return format_html('<a href="{}" target="_blank"><img src="{}" style="max-height: 200px; max-width: 300px;" /></a>', obj.payment_proof.url, obj.payment_proof.url)
-        return _("Not Uploaded")
-    payment_proof_preview.short_description = _("Payment Proof Preview")
+        return _("未上傳")
+    payment_proof_preview.short_description = _("付款證明預覽")
 
     def invoice_link(self, obj):
         from django.utils.html import format_html
         from django.urls import reverse
         url = reverse('invoice_view', args=[obj.id])
-        return format_html('<a class="button" href="{}" target="_blank">{}</a>', url, _("View Invoice"))
-    invoice_link.short_description = _('Invoice')
+        return format_html('<a class="button" href="{}" target="_blank">{}</a>', url, _("查看發票"))
+    invoice_link.short_description = _('發票')
 
     def invoice_view_link(self, obj):
         from django.utils.html import format_html
         from django.urls import reverse
         url = reverse('invoice_view', args=[obj.id])
-        return format_html('<a href="{}" target="_blank" style="font-size:16px; font-weight:bold;">{}</a>', url, _("Open Invoice"))
-    invoice_view_link.short_description = _('Print Invoice')
+        return format_html('<a href="{}" target="_blank" style="font-size:16px; font-weight:bold;">{}</a>', url, _("開啟發票"))
+    invoice_view_link.short_description = _('列印發票')
 
 
 class OrderInline(admin.TabularInline):
@@ -728,19 +790,19 @@ class OrderInline(admin.TabularInline):
     can_delete = False
     show_change_link = True
     ordering = ('-created_at',)
-    verbose_name = _("Order History")
-    verbose_name_plural = _("Order History")
+    verbose_name = _("訂單紀錄")
+    verbose_name_plural = _("訂單紀錄")
     
     def has_add_permission(self, request, obj):
         return False
 
     def get_payment_method_name(self, obj):
         return obj.payment_method.name if obj.payment_method else "-"
-    get_payment_method_name.short_description = _('Payment Method')
+    get_payment_method_name.short_description = _('付款方式')
 
 class CustomerChangeForm(UserChangeForm):
-    phone = forms.CharField(label=_('Phone'), required=False, max_length=30)
-    address = forms.CharField(label=_('Address'), required=False, max_length=255)
+    phone = forms.CharField(label=_('電話'), required=False, max_length=30)
+    address = forms.CharField(label=_('地址'), required=False, max_length=255)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -763,8 +825,15 @@ class CustomerChangeForm(UserChangeForm):
         return user
 
 class CustomerResource(resources.ModelResource):
-    phone = fields.Field(column_name=_('Phone'))
-    address = fields.Field(column_name=_('Address'))
+    username = fields.Field(attribute='username', column_name=_('使用者名稱'))
+    email = fields.Field(attribute='email', column_name=_('電子郵件'))
+    first_name = fields.Field(attribute='first_name', column_name=_('名字'))
+    last_name = fields.Field(attribute='last_name', column_name=_('姓氏'))
+    is_active = fields.Field(attribute='is_active', column_name=_('啟用狀態'))
+    date_joined = fields.Field(attribute='date_joined', column_name=_('加入日期'))
+    last_login = fields.Field(attribute='last_login', column_name=_('最後登入'))
+    phone = fields.Field(column_name=_('電話'))
+    address = fields.Field(column_name=_('地址'))
     
     class Meta:
         model = User
@@ -785,11 +854,32 @@ class CustomerResource(resources.ModelResource):
             # Ensure UserProfile exists
             profile, created = UserProfile.objects.get_or_create(user=instance)
             # Update profile fields from row data
-            profile.phone = row.get('Phone', '')
-            profile.address = row.get('Address', '')
+            # Use Chinese keys matching column_name
+            profile.phone = row.get('電話', '')
+            profile.address = row.get('地址', '')
             profile.save()
             
     def before_import_row(self, row, **kwargs):
+        # Canonical Chinese Mapping
+        header_map = {
+            'username': '使用者名稱',
+            'email': '電子郵件',
+            'first_name': '名字', 'first name': '名字',
+            'last_name': '姓氏', 'last name': '姓氏',
+            'phone': '電話',
+            'address': '地址',
+            'is_active': '啟用狀態', 'active': '啟用狀態',
+            'date_joined': '加入日期',
+            'last_login': '最後登入',
+        }
+        
+        for key in list(row.keys()):
+            key_lower = key.strip().lower()
+            if key_lower in header_map:
+                canonical = header_map[key_lower]
+                if canonical not in row:
+                    row[canonical] = row[key]
+
         # Handle password if needed, or set default
         if 'password' not in row:
              # If no password provided, we might want to set an unusable one or default
@@ -806,12 +896,11 @@ class CustomerAdmin(ImportExportModelAdmin, UserAdmin):
     inlines = [OrderInline]
     
     fieldsets = (
-        (_('Basic Info'), {'fields': ('username', 'password_info', 'last_name', 'first_name', 'email', 'phone', 'address')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        (_('Important Dates'), {'fields': ('last_login', 'date_joined')}),
+        (_('基本資料'), {'fields': ('username', 'password_info', 'last_name', 'first_name', 'email', 'phone', 'address', 'is_active')}),
+        (_('重要日期'), {'fields': ('last_login', 'date_joined')}),
     )
     
-    readonly_fields = ('password_info',)
+    readonly_fields = ('password_info', 'last_login', 'date_joined')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -822,13 +911,13 @@ class CustomerAdmin(ImportExportModelAdmin, UserAdmin):
         from django.utils.html import format_html
         return format_html(
             '******** <a href="../password/" class="button" style="margin-left: 10px;">{}</a>',
-            _("Reset Password")
+            _("重設密碼")
         )
-    password_info.short_description = _('Password')
+    password_info.short_description = _('密碼')
 
     def order_count(self, obj):
         return Order.objects.filter(user=obj).count()
-    order_count.short_description = _('Order Count')
+    order_count.short_description = _('訂單數量')
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
@@ -847,14 +936,14 @@ class CustomerAdmin(ImportExportModelAdmin, UserAdmin):
         valid_statuses = ['paid', 'fulfilling', 'partially_shipped', 'shipped', 'completed']
         total = Order.objects.filter(user=obj, status__in=valid_statuses).aggregate(Sum('total_amount'))['total_amount__sum']
         return f"HK${total:.2f}" if total else "HK$0.00"
-    total_spend.short_description = _('Total Spend')
+    total_spend.short_description = _('總消費金額')
 
     def average_order_value(self, obj):
         from django.db.models import Avg
         valid_statuses = ['paid', 'fulfilling', 'partially_shipped', 'shipped', 'completed']
         avg = Order.objects.filter(user=obj, status__in=valid_statuses).aggregate(Avg('total_amount'))['total_amount__avg']
         return f"HK${avg:.2f}" if avg else "HK$0.00"
-    average_order_value.short_description = _('Average Order Value (AOV)')
+    average_order_value.short_description = _('平均客單價 (AOV)')
 
 @admin.register(SalesDashboard)
 class SalesDashboardAdmin(admin.ModelAdmin):
@@ -921,7 +1010,7 @@ class SalesDashboardAdmin(admin.ModelAdmin):
         # Product Filter
         product_id = request.GET.get('product_id')
         products = Product.objects.all().values('id', 'name')
-        selected_product_name = "All Products"
+        selected_product_name = "所有商品"
 
         if product_id:
             try:
@@ -1013,15 +1102,15 @@ class SalesDashboardAdmin(admin.ModelAdmin):
             writer = csv.writer(response)
             
             # Summary
-            writer.writerow([_('Sales Report'), f'{start_date} {_("to")} {end_date}'])
-            writer.writerow([_('Product'), selected_product_name])
-            writer.writerow([_('Total Sales'), f'HK${total_sales:.2f}'])
-            writer.writerow([_('Total Orders'), total_orders])
-            writer.writerow([_('Average Order Value'), f'HK${avg_order_value:.2f}'])
+            writer.writerow([_('銷售報表'), f'{start_date} {_("至")} {end_date}'])
+            writer.writerow([_('商品'), selected_product_name])
+            writer.writerow([_('總銷售額'), f'HK${total_sales:.2f}'])
+            writer.writerow([_('總訂單數'), total_orders])
+            writer.writerow([_('平均客單價'), f'HK${avg_order_value:.2f}'])
             writer.writerow([])
             
             # Daily Report
-            writer.writerow([_('Date'), _('Sales'), _('Orders'), _('AOV')])
+            writer.writerow([_('日期'), _('銷售額'), _('訂單數'), _('平均客單價')])
             for item in daily_report:
                 writer.writerow([
                     item['date'], 
@@ -1035,7 +1124,7 @@ class SalesDashboardAdmin(admin.ModelAdmin):
         context = {
             **self.admin_site.each_context(request),
             'opts': self.model._meta,
-            'title': _('Sales Dashboard'),
+            'title': _('銷售報表'),
             'period': period,
             'start_date': start_date,
             'end_date': end_date,
@@ -1062,6 +1151,11 @@ except admin.sites.NotRegistered:
 
 @admin.register(User)
 class StaffUserAdmin(UserAdmin):
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ('last_login', 'date_joined')
+        return self.readonly_fields
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         # Only show staff users (Backend Users)
@@ -1072,3 +1166,4 @@ class StaffUserAdmin(UserAdmin):
         if not change:
             obj.is_staff = True
         super().save_model(request, obj, form, change)
+

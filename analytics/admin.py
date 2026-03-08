@@ -8,7 +8,7 @@ from store.models import Order, Product, OrderItem
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 # Import the backup admin to ensure it's registered
-from . import admin_backup
+# from . import admin_backup
 
 # @admin.register(PageVisit)
 class PageVisitAdmin(admin.ModelAdmin):

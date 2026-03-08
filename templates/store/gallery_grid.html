@@ -1,0 +1,15 @@
+<div class="row g-2 mt-4">
+    {% for f in images %}
+    <div class="col-4 col-md-4 col-lg-2">
+      <a href="#" class="d-block shadow-sm gallery-item" 
+         data-bs-toggle="modal" 
+         data-bs-target="#galleryModal" 
+         data-bs-image="/media/gallery/{{ f }}"
+         data-bs-category="{{ category }}">
+        <div class="ratio ratio-1x1">
+          <img src="/media/gallery/{{ f }}" alt="{{ f }}" class="w-100 h-100" style="object-fit: cover;" loading="lazy">
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+</div>

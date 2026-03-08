@@ -314,7 +314,7 @@ msgid "View Details"
 msgstr "查看詳情"
 
 msgid "Go Shopping"
-msgstr "去購物"
+msgstr "去逛逛"
 
 msgid "Featured Products"
 msgstr "精選產品"
@@ -945,6 +945,24 @@ msgstr "您尚未有任何訂單。"
 msgid "Shop Now"
 msgstr "立即購物"
 
+msgid "Go Shopping"
+msgstr "去逛逛"
+
+msgid "Available Coupons"
+msgstr "可用優惠券"
+
+msgid "Valid until"
+msgstr "有效期限"
+
+msgid "Copy Code"
+msgstr "複製代碼"
+
+msgid "Coupon code copied!"
+msgstr "優惠券代碼已複製！"
+
+msgid "No active coupons available at the moment."
+msgstr "目前沒有可用的優惠券。"
+
 msgid "Action"
 msgstr "操作"
 
@@ -956,6 +974,12 @@ msgstr "儲存變更"
 
 msgid "Data Error: Price is required, please check Excel content."
 msgstr "資料錯誤：價格為必填，請檢查 Excel 內容。"
+
+msgid "Don't have an account?"
+msgstr "還沒有帳號嗎？"
+
+msgid "Go Register"
+msgstr "去註冊"
 
 msgid ""
 "Your personal data will be used to process your order, support your "

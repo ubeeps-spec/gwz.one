@@ -1,63 +1,158 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n static %}
+
 {% block title %}{{ product.name }}{% endblock %}
+
+{% block meta_description %}{{ product.description|striptags|truncatechars:160 }}{% endblock %}
+
+{% block og_title %}{{ product.name }}{% endblock %}
+{% block og_description %}{{ product.description|striptags|truncatechars:160 }}{% endblock %}
+
+{% block twitter_title %}{{ product.name }}{% endblock %}
+{% block twitter_description %}{{ product.description|striptags|truncatechars:160 }}{% endblock %}
+
+{% block og_image %}
+  {% if product.image %}
+    {{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}
+  {% elif product.image_url %}
+    {{ product.image_url }}
+  {% else %}
+    {{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}
+  {% endif %}
+{% endblock %}
+
+{% block twitter_image %}
+  {% if product.image %}
+    {{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}
+  {% elif product.image_url %}
+    {{ product.image_url }}
+  {% else %}
+    {{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}
+  {% endif %}
+{% endblock %}
+
+{% block og_type %}product{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-  <div class="row">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ product.name }}",
+  "image": [
+    {% if product.image %}"{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}"{% endif %}
+    {% if product.image and product.images.all %},{% endif %}
+    {% for img in product.images.all %}
+      {% if img.image %}"{{ request.scheme }}://{{ request.get_host }}{{ img.image.url }}"{% if not forloop.last %},{% endif %}{% endif %}
+    {% endfor %}
+   ],
+  "description": "{{ product.description|striptags|truncatechars:300 }}",
+  "sku": "{{ product.sku }}",
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ request.build_absolute_uri }}",
+    "priceCurrency": "HKD",
+    "price": "{{ product.effective_price }}",
+    "availability": "{% if product.stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+  }
+}
+</script>
+
+<div class="container py-4">
+  <div class="row g-4">
     <div class="col-md-5">
-      {% if product.image %}
-        <img id="main-image" src="{{ product.image.url }}" class="img-fluid mb-3 rounded" alt="{{ product.name }}">
-      {% elif product.image_url %}
-        <img id="main-image" src="{{ product.image_url }}" class="img-fluid mb-3 rounded" alt="{{ product.name }}">
-      {% elif product.images.all %}
-        {% with img=product.images.all.0 %}
-          {% if img.image %}
-            <img id="main-image" src="{{ img.image.url }}" class="img-fluid mb-3 rounded" alt="{{ product.name }}">
-          {% elif img.image_url %}
-            <img id="main-image" src="{{ img.image_url }}" class="img-fluid mb-3 rounded" alt="{{ product.name }}">
-          {% else %}
-            <img id="main-image" src="https://placehold.co/600x600?text=No+Image" class="img-fluid mb-3 rounded" alt="No Image">
-          {% endif %}
-        {% endwith %}
-      {% else %}
-        <img id="main-image" src="https://placehold.co/600x600?text=No+Image" class="img-fluid mb-3 rounded" alt="No Image">
-      {% endif %}
+      <div class="main-image-container mb-3 rounded d-flex align-items-center justify-content-center bg-white border shadow-sm" style="height: 350px; width: 100%; position: relative; overflow: hidden;">
+        {% if product.image %}
+          <img id="main-image" src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+        {% elif product.image_url %}
+          <img id="main-image" src="{{ product.image_url }}" class="img-fluid" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+        {% elif product.images.all %}
+          {% with img=product.images.all.0 %}
+            {% if img.image %}
+              <img id="main-image" src="{{ img.image.url }}" class="img-fluid" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+            {% elif img.image_url %}
+              <img id="main-image" src="{{ img.image_url }}" class="img-fluid" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+            {% else %}
+              <img id="main-image" src="https://placehold.co/600x600?text=No+Image" class="img-fluid" alt="No Image" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+            {% endif %}
+          {% endwith %}
+        {% else %}
+          <img id="main-image" src="https://placehold.co/600x600?text=No+Image" class="img-fluid" alt="No Image" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+        {% endif %}
+      </div>
       
-      {% if product.images.all %}
-        <div class="d-flex flex-wrap gap-2">
+      <div class="d-flex flex-wrap gap-2 justify-content-start">
+          <!-- Main Image Thumbnail -->
+          {% if product.image %}
+            <img src="{{ product.image.url }}" class="img-thumbnail product-thumb active-thumb shadow-sm" style="width:60px;height:60px;object-fit:cover;cursor:pointer;border: 2px solid var(--bs-primary);" onclick="changeMainImage(this)">
+          {% elif product.image_url %}
+            <img src="{{ product.image_url }}" class="img-thumbnail product-thumb active-thumb shadow-sm" style="width:60px;height:60px;object-fit:cover;cursor:pointer;border: 2px solid var(--bs-primary);" onclick="changeMainImage(this)">
+          {% endif %}
+
+          <!-- Additional Images Thumbnails -->
           {% for img in product.images.all %}
             {% if img.image %}
-              <img src="{{ img.image.url }}" class="img-thumbnail" style="width:80px;height:80px;object-fit:cover;cursor:pointer;" onclick="document.getElementById('main-image').src='{{ img.image.url }}'">
+              <img src="{{ img.image.url }}" class="img-thumbnail product-thumb shadow-sm" style="width:60px;height:60px;object-fit:cover;cursor:pointer;" onclick="changeMainImage(this)">
             {% elif img.image_url %}
-              <img src="{{ img.image_url }}" class="img-thumbnail" style="width:80px;height:80px;object-fit:cover;cursor:pointer;" onclick="document.getElementById('main-image').src='{{ img.image_url }}'">
+              <img src="{{ img.image_url }}" class="img-thumbnail product-thumb shadow-sm" style="width:60px;height:60px;object-fit:cover;cursor:pointer;" onclick="changeMainImage(this)">
             {% endif %}
           {% endfor %}
-        </div>
-      {% endif %}
+      </div>
+      
+      <script>
+        function changeMainImage(element) {
+            document.getElementById('main-image').src = element.src;
+            
+            // Update active state
+            document.querySelectorAll('.product-thumb').forEach(thumb => {
+                thumb.classList.remove('active-thumb');
+                thumb.style.border = '1px solid #dee2e6'; // Default bootstrap border
+            });
+            element.classList.add('active-thumb');
+            element.style.border = '2px solid var(--bs-primary)';
+        }
+      </script>
     </div>
-    <div class="col-md-7 ps-md-5">
-      <h2>{{ product.name }}</h2>
-    <p class="mb-2">
-      {% if product.discount_price %}
-        <span class="text-danger fw-bold">HK${{ product.discount_price }}</span>
-        <span class="text-muted text-decoration-line-through ms-2">HK${{ product.price }}</span>
-      {% else %}
-        <span class="fw-bold">HK${{ product.price }}</span>
-      {% endif %}
-    </p>
-    <p class="text-muted">SKU: {{ product.sku }}</p>
-    {% if product.categories.all %}
-    <p class="text-muted">{% trans "Category:" %} {{ product.categories.all|join:", " }}</p>
-    {% endif %}
-    <p>{{ product.description|safe }}</p>
-      <form method="post" action="{% url 'cart_add' product.id %}" class="mt-3">
+    
+    <div class="col-md-7 ps-md-4">
+      <h1 class="fw-bold mb-2 h3">{{ product.name }}</h1>
+      
+      <div class="mb-3">
+        {% if product.discount_price %}
+          <span class="h4 fw-bold text-danger">HK${{ product.discount_price }}</span>
+          <span class="text-muted text-decoration-line-through ms-2 fs-6">HK${{ product.price }}</span>
+        {% else %}
+          <span class="h4 fw-bold text-dark">HK${{ product.price }}</span>
+        {% endif %}
+      </div>
+
+      <div class="mb-3 text-muted small border-start border-3 ps-3">
+        <div class="mb-1"><strong>SKU:</strong> {{ product.sku }}</div>
+        {% if product.categories.all %}
+        <div><strong>{% trans "Category:" %}</strong> {{ product.categories.all|join:", " }}</div>
+        {% endif %}
+      </div>
+
+      <div class="product-description mb-4 text-secondary" style="font-size: 1rem; line-height: 1.6;">
+        {{ product.description|safe }}
+      </div>
+
+      <form method="post" action="{% url 'cart_add' product.id %}" class="mt-4">
         {% csrf_token %}
-        <div class="d-flex align-items-center">
-          <div class="input-group me-3" style="max-width:200px;">
-            <input type="number" name="quantity" min="1" value="1" class="form-control">
-            <button type="submit" class="btn btn-primary">{% trans "Add to Cart" %}</button>
+        <div class="d-flex align-items-center flex-wrap gap-3">
+          <div class="d-flex align-items-center">
+            <div class="input-group input-group-sm">
+              <button class="btn btn-outline-secondary" type="button" onclick="if(this.parentNode.querySelector('input').value > 1) this.parentNode.querySelector('input').stepDown()">-</button>
+              <input type="number" name="quantity" min="1" value="1" class="form-control text-center" style="width: 50px;">
+              <button class="btn btn-outline-secondary" type="button" onclick="this.parentNode.querySelector('input').stepUp()">+</button>
+            </div>
           </div>
-          <button type="button" class="btn btn-outline-danger wishlist-btn" data-product-id="{{ product.id }}" title="{% trans 'Add to Wishlist' %}">
+          
+          <button type="submit" class="btn btn-primary shadow-sm px-4">
+             <i class="fas fa-shopping-cart me-2"></i>{% trans "Add to Cart" %}
+          </button>
+          
+          <button type="button" class="btn btn-outline-danger shadow-sm wishlist-btn" data-product-id="{{ product.id }}" title="{% trans 'Add to Wishlist' %}">
              <i class="{% if is_wishlisted %}fas{% else %}far{% endif %} fa-heart"></i>
           </button>
         </div>

@@ -1,6 +1,45 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% block title %}{% trans "Home" %} - GWZ{% endblock %}
+
+{% block title %}
+    {% if is_shop_page %}
+        {% trans "Shop" %} - GWZ
+    {% else %}
+        {% trans "Home" %} - GWZ
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if is_shop_page %}
+        {% trans "Browse our complete collection of premium kitchenware and lifestyle products. Find the perfect tools for your kitchen." %}
+    {% else %}
+        {% trans "GWZ offers premium kitchenware and lifestyle products curated by George. Discover our collection of high-quality cooking tools and home essentials." %}
+    {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% if is_shop_page %}
+        kitchenware, shop, cooking tools, home essentials, buy kitchenware
+    {% else %}
+        GWZ, George, kitchenware, cooking, home cook, lifestyle, recipes
+    {% endif %}
+{% endblock %}
+
+{% block og_title %}
+    {% if is_shop_page %}
+        {% trans "Shop" %} - GWZ
+    {% else %}
+        {% trans "Home" %} - GWZ
+    {% endif %}
+{% endblock %}
+
+{% block og_description %}
+    {% if is_shop_page %}
+        {% trans "Browse our complete collection of premium kitchenware and lifestyle products." %}
+    {% else %}
+        {% trans "GWZ offers premium kitchenware and lifestyle products curated by George." %}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <style>
@@ -114,154 +153,67 @@
     </div>
 </section>
 
-<section class="gwz-features container mb-5">
-    <!-- Row 1: Top 3 Items -->
-    <div class="row g-4 mb-5">
-        <!-- Item 1: Featured Blog -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center feature-card">
-                <div class="position-relative">
-                    <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&h=400" class="card-img-top" alt="{% trans 'Featured Blog' %}">
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <h3 class="fw-bold mb-3" style="color: var(--primary-purple); font-size: 1.5rem;">{% trans "Featured Blog" %}</h3>
-                    <p class="card-text mb-4">{% trans "Get inspiration from Prince's recipes and cooking videos" %}</p>
-                    <div class="mt-auto">
-                        <a href="{% url 'page_detail' 'featured' %}" class="btn btn-outline-dark rounded-pill px-4 stretched-link">{% trans "Read More" %}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Item 2: Blog -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center feature-card">
-                <div class="position-relative">
-                    <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600&h=400" class="card-img-top" alt="{% trans 'Blog' %}">
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <h3 class="fw-bold mb-3" style="color: var(--primary-purple); font-size: 1.5rem;">{% trans "Blog" %}</h3>
-                    <p class="card-text mb-4">{% trans "Explore home cooking and recipes with Prince" %}</p>
-                    <div class="mt-auto">
-                        <a href="{% url 'page_detail' 'blog' %}" class="btn btn-outline-dark rounded-pill px-4 stretched-link">{% trans "Read More" %}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Item 3: Food Review -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center feature-card">
-                <div class="position-relative">
-                    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&h=400" class="card-img-top" alt="{% trans 'Food Review' %}">
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <h3 class="fw-bold mb-3" style="color: var(--primary-purple); font-size: 1.5rem;">{% trans "Food Review" %}</h3>
-                    <p class="card-text mb-4">{% trans "Like other food lovers, Prince loves trying new food..." %}</p>
-                    <div class="mt-auto">
-                        <a href="{% url 'page_detail' 'food-review' %}" class="btn btn-outline-dark rounded-pill px-4 stretched-link">{% trans "Explore More" %}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Features Text (Banner) -->
-    <div class="row mb-5">
-        <div class="col-12 text-center bg-light p-5 rounded">
-            {% if site_settings.feature_image %}
-            <img src="{{ site_settings.feature_image.url }}" class="img-fluid rounded mb-4 shadow-sm" alt="{{ site_settings.feature_title }}" style="max-height: 500px; object-fit: cover;">
-            {% else %}
-            <img src="https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&w=1200&h=500" class="img-fluid rounded mb-4 shadow-sm" alt="{% if site_settings.feature_title %}{{ site_settings.feature_title }}{% else %}GWZ{% endif %}" style="max-height: 500px; object-fit: cover; width: 100%;">
-            {% endif %}
-            <h3 class="fw-bold mb-3" style="color: var(--primary-purple);">{{ site_settings.feature_title }}</h3>
-            <p class="fs-5 mb-0">{{ site_settings.feature_subtitle }}</p>
-        </div>
-    </div>
-
-    <!-- Row 2: Bottom 3 Items -->
-    <div class="row g-4">
-        <!-- Item 4: New Recipes -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center feature-card">
-                <div class="position-relative">
-                    <img src="https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=600&h=400" class="card-img-top" alt="{% trans 'New Recipes' %}">
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <h3 class="fw-bold mb-3" style="color: var(--primary-purple); font-size: 1.5rem;">{% trans "New Recipes" %}</h3>
-                    <p class="card-text mb-4">{% trans "As a self-taught home cook, Prince has some tips..." %}</p>
-                    <div class="mt-auto">
-                        <a href="{% url 'page_detail' 'recipes' %}" class="btn btn-outline-dark rounded-pill px-4 stretched-link">{% trans "Cook Now" %}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Item 5: Featured Products -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center feature-card">
-                <div class="position-relative">
-                    <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&h=400" class="card-img-top" alt="{% trans 'Featured Products' %}">
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <h3 class="fw-bold mb-3" style="color: var(--primary-purple); font-size: 1.5rem;">{% trans "Featured Products" %}</h3>
-                    <p class="card-text mb-4">{% trans "Prince has created a variety of seasonings to make your dishes flavorful." %}</p>
-                    <div class="mt-auto">
-                        <a href="{% url 'page_detail' 'products' %}" class="btn btn-outline-dark rounded-pill px-4 stretched-link">{% trans "Learn More" %}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Item 6: Lifestyle -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center feature-card">
-                <div class="position-relative">
-                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&h=400" class="card-img-top" alt="{% trans 'Lifestyle & Culture' %}">
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <h3 class="fw-bold mb-3" style="color: var(--primary-purple); font-size: 1.5rem;">{% trans "Lifestyle & Culture" %}</h3>
-                    <p class="card-text mb-4">{% trans "See the wider world through Prince's eyes..." %}</p>
-                    <div class="mt-auto">
-                        <a href="{% url 'page_detail' 'lifestyle' %}" class="btn btn-outline-dark rounded-pill px-4 stretched-link">{% trans "Discover More" %}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 {% endif %}
 
+{% if is_shop_page %}
 <!-- Product List -->
 <div class="container pb-5" id="shop-content">
   <div class="row">
     <!-- Sidebar -->
     <div class="col-md-3 mb-4">
        <div class="p-3 bg-light">
-          <h5 class="fw-bold mb-3">{% trans "Categories" %}</h5>
-          <ul class="list-unstyled">
-             <li class="mb-2"><a href="{% url 'product_list' %}#shop-content" class="text-decoration-none {% if not current_category %}fw-bold text-primary{% else %}text-dark{% endif %}">{% trans "All Products" %}</a></li>
-             {% for cat in categories %}
-             <li class="mb-2">
-                <a href="?category={{ cat.name }}#shop-content" class="d-flex justify-content-between align-items-center text-decoration-none {% if current_category == cat.name %}fw-bold text-primary{% else %}text-dark{% endif %}">
-                    <span>{{ cat.name }}</span>
-                    <span class="badge bg-light text-dark border flex-shrink-0 ms-2">{{ cat.count }}</span>
-                </a>
-             </li>
-             {% endfor %}
-          </ul>
+          <div class="d-flex justify-content-between align-items-center">
+              <h5 class="fw-bold mb-3">{% trans "Categories" %}</h5>
+              <button class="btn btn-sm btn-outline-dark d-md-none mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#categoryCollapse" aria-expanded="false" aria-controls="categoryCollapse">
+                  <i class="fas fa-chevron-down"></i>
+              </button>
+          </div>
+          <div class="collapse d-md-block" id="categoryCollapse">
+              <ul class="list-unstyled">
+                 <li class="mb-2"><a href="?#shop-content" class="text-decoration-none {% if not current_category %}fw-bold text-primary{% else %}text-dark{% endif %}">{% trans "All Products" %}</a></li>
+                 {% for cat in categories %}
+                 <li class="mb-2">
+                    <a href="?category={{ cat.name }}#shop-content" class="d-flex justify-content-between align-items-center text-decoration-none {% if current_category == cat.name %}fw-bold text-primary{% else %}text-dark{% endif %}">
+                        <span>{{ cat.name }}</span>
+                        <span class="badge bg-light text-dark border flex-shrink-0 ms-2">{{ cat.count }}</span>
+                    </a>
+                 </li>
+                 {% endfor %}
+              </ul>
+          </div>
        </div>
     </div>
 
     <!-- Main Content -->
     <div class="col-md-9">
-      <!-- Sorting Bar -->
-      <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+      <!-- Mobile Filter Bar & Breadcrumb -->
+      <div class="d-md-none mb-3 sticky-top bg-white border-bottom pb-2 pt-2" style="z-index: 100;">
+          <div class="container-fluid px-0">
+              <div class="d-flex justify-content-between align-items-center">
+                  <!-- Breadcrumb (Previously hidden) -->
+                  <div class="small text-muted ps-2">
+                      {% trans "Home" %} / {% trans "Shop" %} {% if current_category %} / {{ current_category }} {% endif %}
+                  </div>
+
+                  <!-- Price Sort Only -->
+                  <div class="pe-2">
+                      <a href="?sort={% if sort_by == 'price_low' %}price_high{% else %}price_low{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}#shop-content" class="text-decoration-none {% if 'price' in sort_by %}fw-bold text-primary{% else %}text-muted{% endif %}">
+                          {% trans "Price" %} 
+                          {% if sort_by == 'price_low' %}<i class="fas fa-sort-up align-middle"></i>{% elif sort_by == 'price_high' %}<i class="fas fa-sort-down align-middle"></i>{% else %}<i class="fas fa-sort align-middle text-muted"></i>{% endif %}
+                      </a>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Sorting Bar (Desktop) -->
+      <div class="d-none d-md-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
           <div class="small text-muted">
               {% trans "Home" %} / {% trans "Shop" %} {% if current_category %} / {{ current_category }} {% endif %}
           </div>
           <div class="d-flex align-items-center gap-3">
-              <span class="small">{% trans "Show per page:" %}
+              <span class="small d-none d-md-block">{% trans "Show per page:" %}
                 <a href="?per_page=9&sort={{ sort_by }}&cols={{ grid_cols }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}#shop-content" class="text-decoration-none {% if per_page == 9 %}fw-bold text-dark{% else %}text-muted{% endif %}">9</a> / 
                 <a href="?per_page=12&sort={{ sort_by }}&cols={{ grid_cols }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}#shop-content" class="text-decoration-none {% if per_page == 12 %}fw-bold text-dark{% else %}text-muted{% endif %}">12</a> / 
                 <a href="?per_page=18&sort={{ sort_by }}&cols={{ grid_cols }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}#shop-content" class="text-decoration-none {% if per_page == 18 %}fw-bold text-dark{% else %}text-muted{% endif %}">18</a> / 
@@ -332,39 +284,52 @@
 
       <div class="row g-4">
         {% for p in products %}
-          <div class="col-12 {% if grid_cols == '2' %}col-md-6{% elif grid_cols == '4' %}col-md-3{% else %}col-md-4{% endif %}">
+          <div class="col-6 {% if grid_cols == '2' %}col-md-6{% elif grid_cols == '4' %}col-md-3{% else %}col-md-4{% endif %}">
             <div class="card h-100 border-0 shadow-sm product-card">
               <div class="position-relative">
-                  <!-- Wishlist Button -->
-                  <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 rounded-circle shadow-sm wishlist-btn" 
+                  <a href="{% url 'product_detail' p.slug %}" class="d-block">
+                    {% if p.image %}
+                      <img src="{{ p.image.url }}" class="card-img-top p-2 p-md-4" alt="{{ p.name }}" style="height: 180px; object-fit: contain;">
+                    {% elif p.image_url %}
+                      <img src="{{ p.image_url }}" class="card-img-top p-2 p-md-4" alt="{{ p.name }}" style="height: 180px; object-fit: contain;">
+                    {% else %}
+                      <img src="https://placehold.co/200x200?text={% trans 'No Image' %}" class="card-img-top p-2 p-md-4" alt="{% trans 'No Image' %}">
+                    {% endif %}
+                  </a>
+                  
+                  <!-- Wishlist Button (Top Right) -->
+                  <button class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center wishlist-btn position-absolute top-0 end-0 m-2" 
                           data-product-id="{{ p.id }}" 
                           title="{% trans 'Add to Wishlist' %}"
-                          style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; z-index: 10;">
-                      <i class="{% if p.id in wishlist_product_ids %}fas{% else %}far{% endif %} fa-heart text-danger"></i>
+                          style="width: 32px; height: 32px; z-index: 10;">
+                      <i class="{% if p.id in wishlist_product_ids %}fas text-danger{% else %}far text-muted{% endif %} fa-heart"></i>
                   </button>
-
-                  {% if p.image %}
-                    <img src="{{ p.image.url }}" class="card-img-top p-4" alt="{{ p.name }}" style="height: 220px; object-fit: contain;">
-                  {% elif p.image_url %}
-                    <img src="{{ p.image_url }}" class="card-img-top p-4" alt="{{ p.name }}" style="height: 220px; object-fit: contain;">
-                  {% else %}
-                    <img src="https://placehold.co/200x200?text={% trans 'No Image' %}" class="card-img-top p-4" alt="{% trans 'No Image' %}">
-                  {% endif %}
                   
-                  <!-- Blue/Black Label Removed -->
+                  <!-- Add to Cart Button (Bottom Right) -->
+                  <form action="{% url 'cart_add' p.id %}" method="post" class="position-absolute bottom-0 end-0 m-2" style="z-index: 10;">
+                      {% csrf_token %}
+                      <input type="hidden" name="quantity" value="1">
+                      <button type="submit" class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" 
+                              title="{% trans 'Add to Cart' %}"
+                              style="width: 32px; height: 32px;">
+                          <i class="fas fa-shopping-cart text-dark"></i>
+                      </button>
+                  </form>
               </div>
 
-              <div class="card-body text-center">
-                <h6 class="card-title text-truncate mb-2" style="font-size: 0.9rem;">{{ p.name }}</h6>
-                <div class="mb-3">
+              <div class="card-body text-center p-2 p-md-3">
+                <h6 class="card-title text-truncate mb-1" style="font-size: 0.9rem;">
+                    <a href="{% url 'product_detail' p.slug %}" class="text-decoration-none text-dark">{{ p.name }}</a>
+                </h6>
+                <div class="mb-2">
                   {% if p.discount_price %}
-                    <span class="text-danger fw-bold">HK${{ p.discount_price }}</span>
-                    <span class="text-muted text-decoration-line-through ms-2" style="font-size: 0.85em;">HK${{ p.price }}</span>
+                    <span class="text-danger fw-bold">HK${{ p.discount_price|floatformat:0 }}</span>
+                    <br class="d-md-none">
+                    <span class="text-muted text-decoration-line-through small ms-1">HK${{ p.price|floatformat:0 }}</span>
                   {% else %}
-                    <span class="fw-bold">HK${{ p.price }}</span>
+                    <span class="fw-bold text-dark">HK${{ p.price|floatformat:0 }}</span>
                   {% endif %}
                 </div>
-                <a href="{% url 'product_detail' p.slug %}" class="btn btn-outline-dark btn-sm rounded-0 w-100">{% trans "Add to Cart" %}</a>
               </div>
             </div>
           </div>
@@ -418,4 +383,5 @@
     </div>
   </div>
 </div>
+{% endif %}
 {% endblock %}

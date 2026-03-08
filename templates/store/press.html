@@ -1,0 +1,506 @@
+{% extends 'base.html' %}
+{% load i18n static shortcodes %}
+{% block title %}媒體中心 | GWZ{% endblock %}
+
+{% block content %}
+<style>
+    .section-title {
+        position: relative;
+        display: inline-block;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+    }
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background-color: var(--primary-purple, #6610f2); /* Fallback to purple */
+        border-radius: 2px;
+    }
+    .blog-content h2, .blog-content h3 {
+        text-align: center;
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+    }
+
+    /* Custom Play Button (Circle with Play Icon) */
+    .custom-play-btn {
+        width: 80px;
+        height: 80px;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(2px);
+    }
+    .custom-play-btn i {
+        color: white;
+        font-size: 2.5rem;
+        margin-left: 5px; /* Visual correction for play icon center */
+    }
+    .custom-play-btn:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+        transform: scale(1.1);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .custom-play-btn {
+            width: 50px;
+            height: 50px;
+        }
+        .custom-play-btn i {
+            font-size: 1.5rem;
+            margin-left: 3px;
+        }
+    }
+</style>
+
+<div class="bg-black text-white py-4 mb-5">
+    <div class="container text-center">
+        <h1 class="h2 fw-bold mb-0">{% if site_settings.menu_videos_text %}{{ site_settings.menu_videos_text }}{% else %}媒體中心{% endif %}</h1>
+    </div>
+</div>
+
+<div class="container mb-5">
+    
+    <!-- Video Section (Hardcoded) -->
+    <div class="p-5 rounded shadow-sm mb-5" style="background-color: #e9ecef;">
+        <div class="blog-content">
+            <p class="text-center lead">精選王子在烹飪、美食與旅遊上的精彩影片。</p>
+            <!-- v1.4 -->
+
+            <h3 class="mt-5 mb-4 fw-bold">播放清單</h3>
+
+            <div class="row g-4">
+                <!-- Top Large Item: Playlist -->
+                <div class="col-12">
+                    <div class="position-relative">
+                        <a class="text-decoration-none d-block shadow-sm hover-shadow transition-all rounded overflow-hidden" href="https://youtube.com/playlist?list=PLEjO4hD4At7yhmox4RhnjRWaUujB24TZ2&amp;si=DKOOyApX2E1pR2g8" target="_blank">
+                            <img alt="WAW Expert - 王子" class="w-100" src="{% static 'img/WAW_channel.png' %}" /> 
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div class="custom-play-btn">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Featured Videos Header -->
+                <div class="col-12 text-center mt-4">
+                     <h3 class="fw-bold mb-0">精選影片</h3>
+                </div>
+
+                <!-- Bottom Item 1: Video -->
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 bg-transparent">
+                        <div class="position-relative">
+                            <a class="text-decoration-none d-block shadow-sm hover-shadow transition-all rounded overflow-hidden mb-3" href="https://www.youtube.com/watch?v=QHV5WyFcBXQ" target="_blank">
+                                <img alt="惹味乾炒咖喱雞" class="w-100" src="https://img.youtube.com/vi/QHV5WyFcBXQ/maxresdefault.jpg" style="object-fit:cover; aspect-ratio: 16/9;" /> 
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <div class="custom-play-btn">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="card-body p-0 text-center">
+                            <h6 class="card-title mt-2">
+                                <a class="text-decoration-none text-dark fw-bold" href="https://www.youtube.com/watch?v=QHV5WyFcBXQ" target="_blank">惹味乾炒咖喱雞</a>
+                            </h6>
+                            <p class="card-text text-muted small">
+                                <a class="text-decoration-none text-muted" href="https://www.youtube.com/watch?v=QHV5WyFcBXQ" target="_blank">咖喱控必學！星馬料理港式味道，香氣四溢。</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Item 2: Video -->
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 bg-transparent">
+                        <div class="position-relative">
+                            <a class="text-decoration-none d-block shadow-sm hover-shadow transition-all rounded overflow-hidden mb-3" href="https://www.youtube.com/watch?v=SU_CwTwxhpc" target="_blank">
+                                <img alt="潮州鹵水五花腩" class="w-100" src="https://img.youtube.com/vi/SU_CwTwxhpc/maxresdefault.jpg" style="object-fit:cover; aspect-ratio: 16/9;" /> 
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <div class="custom-play-btn">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="card-body p-0 text-center">
+                            <h6 class="card-title mt-2">
+                                <a class="text-decoration-none text-dark fw-bold" href="https://www.youtube.com/watch?v=SU_CwTwxhpc" target="_blank">潮州鹵水五花腩</a>
+                            </h6>
+                            <p class="card-text text-muted small">
+                                <a class="text-decoration-none text-muted" href="https://www.youtube.com/watch?v=SU_CwTwxhpc" target="_blank">送飯必備！鹹香惹味，做法簡單又入味。</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Press Gallery Section -->
+    <div class="bg-white p-4 rounded">
+        <div class="text-center">
+            <h2 class="fw-bold section-title">媒體剪影</h2>
+            <p class="text-muted mb-4">
+                收錄各大報章與媒體對 GWZ 與王子的報導。
+            </p>
+        </div>
+
+        {% if images %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+            {% for img in images %}
+            <div class="col">
+                <a href="#" class="d-block position-relative overflow-hidden rounded shadow-sm hover-shadow transition-all" 
+                   data-bs-toggle="modal" data-bs-target="#pressModal" data-bs-slide-to="{{ forloop.counter0 }}">
+                    <img src="{{ img.url }}" class="img-fluid w-100" alt="{{ img.name }}" 
+                         style="height: 300px; object-fit: cover; object-position: top;">
+                    <div class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0 hover-opacity-100 bg-dark bg-opacity-50 transition-all">
+                        <i class="fas fa-search-plus text-white fa-2x"></i>
+                    </div>
+                </a>
+                <h5 class="mt-2 text-center fs-6 text-truncate text-muted">{{ img.name }}</h5>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+            尚未加入媒體圖片。請將圖片上傳至「media/press」。
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div class="modal fade" id="pressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0 position-relative">
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 2000; font-size: 1.5rem; filter: invert(1) grayscale(100%) brightness(200%); opacity: 1;"></button>
+            <div class="modal-body p-0 position-relative">
+                <div id="pressCarousel" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        {% for img in images %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <div class="zoom-wrapper d-flex justify-content-center align-items-center" style="height: 85vh; overflow: hidden; position: relative;">
+                                <img src="{{ img.url }}" class="d-block img-fluid rounded zoom-target" alt="{{ img.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain; cursor: grab; transition: transform 0.1s ease-out;">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#pressCarousel" data-bs-slide="prev" style="width: 5%; z-index: 1052;">
+                        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#pressCarousel" data-bs-slide="next" style="width: 5%; z-index: 1052;">
+                        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    <!-- Zoom Controls -->
+                    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-5 d-flex gap-2" style="z-index: 1053;">
+                        <button class="btn btn-light btn-sm rounded-circle shadow" id="zoomOutBtn" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                        <button class="btn btn-light btn-sm rounded-circle shadow" id="zoomResetBtn" title="Reset"><i class="fas fa-compress"></i></button>
+                        <button class="btn btn-light btn-sm rounded-circle shadow" id="zoomInBtn" title="Zoom In"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+ <!-- Blog Lightbox Modal -->
+<div class="modal fade" id="blogModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0 position-relative">
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 2000; font-size: 1.5rem; filter: invert(1) grayscale(100%) brightness(200%); opacity: 1;"></button>
+            <div class="modal-body p-0 position-relative">
+                <div id="blogCarousel" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner" id="blogCarouselInner">
+                        <!-- Dynamic Content -->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#blogCarousel" data-bs-slide="prev" style="width: 5%; z-index: 1052;">
+                        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#blogCarousel" data-bs-slide="next" style="width: 5%; z-index: 1052;">
+                        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    <!-- Zoom Controls -->
+                    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-5 d-flex gap-2" style="z-index: 1053;">
+                        <button class="btn btn-light btn-sm rounded-circle shadow" id="blogZoomOutBtn" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                        <button class="btn btn-light btn-sm rounded-circle shadow" id="blogZoomResetBtn" title="Reset"><i class="fas fa-compress"></i></button>
+                        <button class="btn btn-light btn-sm rounded-circle shadow" id="blogZoomInBtn" title="Zoom In"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Press Modal Logic (Existing) ---
+        var pressModal = document.getElementById('pressModal');
+        var pressCarousel = document.getElementById('pressCarousel');
+        var pressBootstrapCarousel = new bootstrap.Carousel(pressCarousel);
+
+        // Zoom variables for Press
+        let pressState = { scale: 1, translateX: 0, translateY: 0, isDragging: false, startX: 0, startY: 0, activeImage: null };
+        const zoomStep = 0.5;
+        const maxScale = 5;
+        const minScale = 1;
+
+        function updatePressActiveImage() {
+            pressState.activeImage = pressCarousel.querySelector('.carousel-item.active img');
+            resetPressZoom();
+        }
+
+        function resetPressZoom() {
+            pressState.scale = 1;
+            pressState.translateX = 0;
+            pressState.translateY = 0;
+            if (pressState.activeImage) {
+                pressState.activeImage.style.transform = `translate(${pressState.translateX}px, ${pressState.translateY}px) scale(${pressState.scale})`;
+                pressState.activeImage.style.cursor = 'grab';
+            }
+        }
+
+        function applyPressTransform() {
+            if (pressState.activeImage) {
+                pressState.activeImage.style.transform = `translate(${pressState.translateX}px, ${pressState.translateY}px) scale(${pressState.scale})`;
+            }
+        }
+
+        function zoomPress(direction) {
+            if (!pressState.activeImage) return;
+            if (direction === 'in') pressState.scale = Math.min(pressState.scale + zoomStep, maxScale);
+            else pressState.scale = Math.max(pressState.scale - zoomStep, minScale);
+
+            if (pressState.scale === 1) {
+                pressState.translateX = 0;
+                pressState.translateY = 0;
+            }
+            applyPressTransform();
+        }
+
+        // Press Event Listeners
+        if (document.getElementById('zoomInBtn')) {
+            document.getElementById('zoomInBtn').addEventListener('click', () => zoomPress('in'));
+            document.getElementById('zoomOutBtn').addEventListener('click', () => zoomPress('out'));
+            document.getElementById('zoomResetBtn').addEventListener('click', resetPressZoom);
+        }
+        if (pressCarousel) {
+            pressCarousel.addEventListener('slid.bs.carousel', updatePressActiveImage);
+            pressCarousel.addEventListener('wheel', function(e) {
+                if (!pressState.activeImage) return;
+                e.preventDefault();
+                if (e.deltaY < 0) zoomPress('in');
+                else zoomPress('out');
+            });
+            const pressCarouselInner = pressCarousel.querySelector('.carousel-inner');
+            if (pressCarouselInner) {
+                pressCarouselInner.addEventListener('mousedown', function(e) {
+                    if (!pressState.activeImage || pressState.scale === 1) return;
+                    if (e.target !== pressState.activeImage) return;
+                    pressState.isDragging = true;
+                    pressState.startX = e.clientX - pressState.translateX;
+                    pressState.startY = e.clientY - pressState.translateY;
+                    pressState.activeImage.style.cursor = 'grabbing';
+                    e.preventDefault();
+                });
+            }
+        }
+        if (pressModal) {
+            pressModal.addEventListener('shown.bs.modal', updatePressActiveImage);
+            pressModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                if (button) {
+                    var slideTo = button.getAttribute('data-bs-slide-to');
+                    if (pressBootstrapCarousel && slideTo !== null) {
+                        pressBootstrapCarousel.to(slideTo);
+                    }
+                }
+                resetPressZoom();
+            });
+        }
+
+
+        // --- Blog Modal Logic (New) ---
+        const blogContentImages = document.querySelectorAll('.blog-content img');
+        const blogCarouselInner = document.getElementById('blogCarouselInner');
+        const blogModal = document.getElementById('blogModal');
+        const blogCarousel = document.getElementById('blogCarousel');
+        let blogBootstrapCarousel = blogCarousel ? new bootstrap.Carousel(blogCarousel) : null;
+
+        if (blogContentImages.length > 0 && blogCarouselInner && blogModal && blogBootstrapCarousel) {
+            blogContentImages.forEach((img, index) => {
+                // Make image clickable
+                img.style.cursor = 'pointer';
+                img.classList.add('hover-shadow'); // Optional css class
+                img.addEventListener('click', () => {
+                    // Populate Carousel if empty or rebuild? Better to build once on load.
+                    // But we can just set the active index.
+                    blogBootstrapCarousel.to(index);
+                    var modal = new bootstrap.Modal(blogModal);
+                    modal.show();
+                });
+
+                // Create Carousel Item
+                const div = document.createElement('div');
+                div.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="zoom-wrapper d-flex justify-content-center align-items-center" style="height: 85vh; overflow: hidden; position: relative;">
+                        <img src="${img.src}" class="d-block img-fluid rounded zoom-target" alt="${img.alt || 'Image'}" style="max-height: 100%; max-width: 100%; object-fit: contain; cursor: grab; transition: transform 0.1s ease-out;">
+                    </div>
+                `;
+                blogCarouselInner.appendChild(div);
+            });
+        }
+
+        // Zoom variables for Blog
+        let blogState = { scale: 1, translateX: 0, translateY: 0, isDragging: false, startX: 0, startY: 0, activeImage: null };
+
+        function updateBlogActiveImage() {
+            if (!blogCarousel) return;
+            blogState.activeImage = blogCarousel.querySelector('.carousel-item.active img');
+            resetBlogZoom();
+        }
+
+        function resetBlogZoom() {
+            blogState.scale = 1;
+            blogState.translateX = 0;
+            blogState.translateY = 0;
+            if (blogState.activeImage) {
+                blogState.activeImage.style.transform = `translate(${blogState.translateX}px, ${blogState.translateY}px) scale(${blogState.scale})`;
+                blogState.activeImage.style.cursor = 'grab';
+            }
+        }
+
+        function applyBlogTransform() {
+            if (blogState.activeImage) {
+                blogState.activeImage.style.transform = `translate(${blogState.translateX}px, ${blogState.translateY}px) scale(${blogState.scale})`;
+            }
+        }
+
+        function zoomBlog(direction) {
+            if (!blogState.activeImage) return;
+            if (direction === 'in') blogState.scale = Math.min(blogState.scale + zoomStep, maxScale);
+            else blogState.scale = Math.max(blogState.scale - zoomStep, minScale);
+
+            if (blogState.scale === 1) {
+                blogState.translateX = 0;
+                blogState.translateY = 0;
+            }
+            applyBlogTransform();
+        }
+
+        // Blog Event Listeners
+        if (document.getElementById('blogZoomInBtn')) {
+            document.getElementById('blogZoomInBtn').addEventListener('click', () => zoomBlog('in'));
+            document.getElementById('blogZoomOutBtn').addEventListener('click', () => zoomBlog('out'));
+            document.getElementById('blogZoomResetBtn').addEventListener('click', resetBlogZoom);
+        }
+        
+        if (blogCarousel) {
+            blogCarousel.addEventListener('slid.bs.carousel', updateBlogActiveImage);
+            blogCarousel.addEventListener('wheel', function(e) {
+                if (!blogState.activeImage) return;
+                e.preventDefault();
+                if (e.deltaY < 0) zoomBlog('in');
+                else zoomBlog('out');
+            });
+        }
+        
+        if (blogModal) {
+            blogModal.addEventListener('shown.bs.modal', updateBlogActiveImage);
+        }
+        
+        if (blogCarouselInner) {
+            blogCarouselInner.addEventListener('mousedown', function(e) {
+                if (!blogState.activeImage || blogState.scale === 1) return;
+                if (e.target !== blogState.activeImage) return;
+                blogState.isDragging = true;
+                blogState.startX = e.clientX - blogState.translateX;
+                blogState.startY = e.clientY - blogState.translateY;
+                blogState.activeImage.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+        }
+
+        // Global Mouse Move/Up for Dragging (Shared)
+        document.addEventListener('mousemove', function(e) {
+            if (pressState.isDragging && pressState.activeImage) {
+                e.preventDefault();
+                pressState.translateX = e.clientX - pressState.startX;
+                pressState.translateY = e.clientY - pressState.startY;
+                applyPressTransform();
+            }
+            if (blogState.isDragging && blogState.activeImage) {
+                e.preventDefault();
+                blogState.translateX = e.clientX - blogState.startX;
+                blogState.translateY = e.clientY - blogState.startY;
+                applyBlogTransform();
+            }
+            if (bookState.isDragging && bookState.activeImage) {
+                e.preventDefault();
+                bookState.translateX = e.clientX - bookState.startX;
+                bookState.translateY = e.clientY - bookState.startY;
+                applyBookTransform();
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (pressState.isDragging && pressState.activeImage) {
+                pressState.isDragging = false;
+                pressState.activeImage.style.cursor = 'grab';
+            }
+            if (blogState.isDragging && blogState.activeImage) {
+                blogState.isDragging = false;
+                blogState.activeImage.style.cursor = 'grab';
+            }
+            if (bookState.isDragging && bookState.activeImage) {
+                bookState.isDragging = false;
+                bookState.activeImage.style.cursor = 'grab';
+            }
+        });
+        
+        // Keyboard navigation (Shared/Context Aware)
+        document.addEventListener('keydown', function(event) {
+            // Check which modal is open
+            if (pressModal.classList.contains('show')) {
+                if (event.key === 'ArrowLeft') pressBootstrapCarousel.prev();
+                else if (event.key === 'ArrowRight') pressBootstrapCarousel.next();
+                else if (event.key === '+' || event.key === '=') zoomPress('in');
+                else if (event.key === '-' || event.key === '_') zoomPress('out');
+                else if (event.key === '0') resetPressZoom();
+            } else if (bookModal.classList.contains('show')) {
+                if (event.key === 'ArrowLeft') bookBootstrapCarousel.prev();
+                else if (event.key === 'ArrowRight') bookBootstrapCarousel.next();
+                else if (event.key === '+' || event.key === '=') zoomBook('in');
+                else if (event.key === '-' || event.key === '_') zoomBook('out');
+                else if (event.key === '0') resetBookZoom();
+            } else if (blogModal.classList.contains('show')) {
+                if (event.key === 'ArrowLeft') blogBootstrapCarousel.prev();
+                else if (event.key === 'ArrowRight') blogBootstrapCarousel.next();
+                else if (event.key === '+' || event.key === '=') zoomBlog('in');
+                else if (event.key === '-' || event.key === '_') zoomBlog('out');
+                else if (event.key === '0') resetBlogZoom();
+            }
+        });
+    });
+</script>
+{% endblock %}
