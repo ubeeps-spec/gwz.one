@@ -89,7 +89,7 @@ class HeroSlideAdmin(TranslationAdmin):
 class SiteSettingsAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('基本設定'), {
-            'fields': ('site_name', 'logo')
+            'fields': ('site_name', 'logo', 'social_share_image')
         }),
         (_('聯絡頁面設定'), {
             'fields': ('contact_phone', 'contact_email', 'contact_address', 'contact_opening_hours')
