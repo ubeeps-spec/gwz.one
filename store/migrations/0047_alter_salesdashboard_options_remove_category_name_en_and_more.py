@@ -46,9 +46,4 @@ class Migration(migrations.Migration):
             model_name='product',
             name='specs_zh_hant',
         ),
-        migrations.AddField(
-            model_name='sitesettings',
-            name='social_share_image',
-            field=models.ImageField(blank=True, help_text='Recommended: 1200x1200px (Square) for WhatsApp/Facebook previews', null=True, upload_to='site/', verbose_name='Social Share Image'),
-        ),
     ]

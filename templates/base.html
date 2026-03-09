@@ -14,14 +14,14 @@
   <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
   <meta property="og:title" content="{% block og_title %}GWZ - Become a home cook with George{% endblock %}">
   <meta property="og:description" content="{% block og_description %}GWZ offers premium kitchenware and lifestyle products curated by George. Discover our collection of high-quality cooking tools and home essentials.{% endblock %}">
-  <meta property="og:image" content="{% block og_image %}{% if site_settings.social_share_image %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.social_share_image.url }}{% elif site_settings.logo %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.logo.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}{% endif %}{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{% if site_settings.social_share_image %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.social_share_image.url }}{% elif site_settings.logo %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.logo.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_445.png' %}{% endif %}{% endblock %}">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
   <meta property="twitter:title" content="{% block twitter_title %}GWZ - Become a home cook with George{% endblock %}">
   <meta property="twitter:description" content="{% block twitter_description %}GWZ offers premium kitchenware and lifestyle products curated by George. Discover our collection of high-quality cooking tools and home essentials.{% endblock %}">
-  <meta property="twitter:image" content="{% block twitter_image %}{% if site_settings.social_share_image %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.social_share_image.url }}{% elif site_settings.logo %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.logo.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}{% endif %}{% endblock %}">
+  <meta property="twitter:image" content="{% block twitter_image %}{% if site_settings.social_share_image %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.social_share_image.url }}{% elif site_settings.logo %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.logo.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_445.png' %}{% endif %}{% endblock %}">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
