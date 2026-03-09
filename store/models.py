@@ -231,6 +231,7 @@ class OrderNote(models.Model):
 class SiteSettings(models.Model):
     site_name = models.CharField(max_length=100, default="My E-Shop", verbose_name=_("Site Name"))
     logo = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name=_("Logo"))
+    social_share_image = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name=_("Social Share Image"), help_text=_("Recommended: 1200x1200px (Square) for WhatsApp/Facebook previews"))
     hero_banner = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name=_("Hero Banner"))
     hero_title = models.CharField(max_length=200, blank=True, verbose_name=_("Hero Title"))
     hero_subtitle = models.CharField(max_length=200, blank=True, verbose_name=_("Hero Subtitle"))
